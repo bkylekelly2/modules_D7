@@ -1,0 +1,51 @@
+<?php
+
+function ads_cron(){
+//ingest_ads_live();
+}
+    /**
+    * Implements hook_menu().
+    */
+    function ads_menu() {
+      $items['ads/ads'] = array(
+        'title' => 'ads',
+        'page callback' => 'ads_ads_callback',
+        'access arguments' => array('access content'),
+      );
+     
+      return $items;
+    }
+
+    /**
+    * Custom callback functions.
+    */
+    function ads_ads_callback() {
+      get_ad();
+    }
+	
+function get_ad(){
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'advertisement')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->addTag('random')
+  ->range(0, 1)
+  ->addMetaData('account', user_load(1)); // Run the query as user 1.
+$result = $query->execute();
+if (isset($result['node'])) {
+  $log_items_nids = array_keys($result['node']);
+}
+foreach($log_items_nids as $_nid){
+$ad = node_load($_nid);
+$ad = objectToArray($ad);
+	//print_r($ad); exit;
+	$url = drupal_get_path_alias('node/'.$_nid.'');
+
+//$output .= '<a href="'.$url.'"><img src="/sites/default/files/'.$ad['field_image']['en'][0]['filename'].'" height="220" width="220" /></a>';
+$output .= '<img src="/sites/default/files/'.$ad['field_image']['en'][0]['filename'].'" height="220" width="220" />';
+}
+?>
+
+<?php echo $output; ?>
+
+<?php }

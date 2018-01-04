@@ -1,0 +1,203 @@
+<?php
+class NowPlaying_data {
+
+public function current_song_data (){
+$lines = file_get_contents("http://zeus.collectiveradio.com/get_icecast_logs.php");	
+foreach ($lines as $line_num => $line) {$data = $line;}	
+return $data;
+}
+
+public function parts (){
+$parts = explode("-",$this->current_song_data());
+return $parts;
+}
+
+public function start_date(){
+$DTparts=$this->parts();
+$DTparts = explode(":",$DTparts[0]);
+$date=$DTparts[0];
+$dateparts = explode("/",$date);
+$day = $dateparts[0];
+$month = $dateparts[1];
+$year = $dateparts[2];
+$month = date("m", strtotime("$month-$year"));
+return $year. "-" .$month. "-" .$day;
+}
+
+public function start_time(){
+$DTparts=$this->parts();
+$timeparts = explode(":",$DTparts[0]);
+//$date=$timeparts[0];
+$hour=$timeparts[1];
+if ($hour<12){
+$timepart = "AM";
+} else {
+$timepart = "PM";
+}
+if ($hour[0]=="0"){
+$hour = substr($hour, -1, 1);
+}
+$minutes=$timeparts[2];
+$seconds=$timeparts[3];
+return $hour . ":" .$minutes.$timepart;
+}
+
+public function start_time_full(){
+$DTparts=$this->parts();
+$timeparts = explode(":",$DTparts[0]);
+//$date=$timeparts[0];
+$hour=$timeparts[1];
+$minutes=$timeparts[2];
+$seconds=$timeparts[3];
+return $hour.":".$minutes.":".$seconds;
+}
+
+public function start_datetime_full(){
+$_date = $this->start_date();
+$_time = $this->start_time_full();
+$start_datetime_full = $_date . " " . $_time;
+return $start_datetime_full;
+}
+
+public function playtime(){
+global $conn;
+$titleID = $this->titleID();
+$sql = "SELECT playtime_seconds from files where ID = '$titleID'";
+$result = $conn->query($sql); 
+while (($row = $result->fetch_assoc()) !== NULL){			
+$playtime=$row['playtime_seconds'];
+}
+return $playtime;
+}
+
+public function title_playing(){
+$parts=$this->parts();
+$title=$parts[2];
+return $title;
+}
+
+public function titleID(){
+global $conn;
+$title = $this->title_playing();
+$clean_title = $this->clean_title($title);
+$sql = "SELECT titleID from playlist_nowplaying where clean_title LIKE '%$clean_title%' ";
+$result = $conn->query($sql); 
+while (($row = $result->fetch_assoc()) !== NULL){			
+$titleID=$row['titleID'];
+}
+return $titleID;
+}
+
+public function title(){
+global $conn;
+$titleID = $this->titleID();
+$sql = "SELECT title from files where ID = '$titleID' ";
+$result = $conn->query($sql); 
+while (($row = $result->fetch_assoc()) !== NULL){			
+$title=$row['title'];
+}
+return $title;
+}
+
+public function filename(){
+global $conn;
+$titleID = $this->titleID();
+$sql = "SELECT filename from files where ID = '$titleID' ";
+$result = $conn->query($sql); 
+while (($row = $result->fetch_assoc()) !== NULL){			
+$filename=$row['filename'];
+}
+return $filename;
+}
+
+public function album(){
+global $conn;
+$titleID = $this->titleID();
+$sql = "SELECT album from files where ID = '$titleID'";
+$result = $conn->query($sql); 
+while (($row = $result->fetch_assoc()) !== NULL){			
+$album=$row['album'];
+}
+return $album;
+}
+
+public function artist(){
+global $conn;
+$titleID = $this->titleID();
+$sql = "SELECT artist from files where ID = '$titleID'";
+$result = $conn->query($sql); 
+while (($row = $result->fetch_assoc()) !== NULL){			
+$artist=$row['artist'];
+}
+return $artist;
+}
+
+
+public function clean_title ($title){
+$title = str_replace(" ","",$title);
+$title = preg_replace('/[^a-z\d ]/i', '', $title);
+$title = strtolower($title);
+return trim($title);
+}
+
+public function refresh_rate () {
+include("/var/www/functions/time_diff.php"); 
+$playtime = $this->playtime();
+$full_start_time = $this->start_time_full();
+$start_date = $this->start_date();
+$now_playing_start_time = strtotime("$start_date $full_start_time");
+$now_playing_end_time = round(($now_playing_start_time+$playtime));
+$now_playing_end_time = date("Y-m-d H:i:s",$now_playing_end_time);
+$cur_time = date("Y-m-d H:i:s");
+$refresh_rate = time_diff($now_playing_end_time,$cur_time);
+$jsoffset = 3; //takes into account the lag time IN SECONDS from when the next track begins on the server and the stream reaches the user- set at 0 seconds now
+$milliseconds = 1;
+$refresh_rate = (($refresh_rate*$milliseconds)+$jsoffset);
+return $refresh_rate;
+}
+
+public function meta_data () {
+include("/var/www/functions/sec2hms.php");
+
+$artist = $this->artist();
+$album = $this->album();
+$title = $this->title();
+$start_time = $this->start_time();
+$playtime = $this->playtime();
+$playlength = sec2hms ($playtime);
+
+?>
+<table width="100%"  border="0" cellspacing="0" cellpadding="0" bordercolor="#ffffff">
+<tr>
+    <td align="left"><B><font size="4" color="#ffffff">Artist:</B> <?php echo $artist; ?></font></td>
+</tr>  
+  <tr>
+    <td align="left"><B><font size="4" color="#ffffff">Album:</B> <?php echo $album; ?></font></td>
+</tr>
+  <tr>
+    <td align="left"><B><font size="4" color="#ffffff">Title:</B> <?php echo $title; ?></font></td>
+  </tr>
+  <tr>
+    <td aliggn="left"><B><font size="4" color="#ffffff">Start:</B> <?php echo $start_time; ?></font></td>
+  </tr>
+  <tr>
+    <td align="left"><B><font size="4" color="#ffffff">Length:</B> <?php echo $playlength; ?></font></td>
+  </tr>
+</table>
+<?php
+}
+
+public function meta_data_mini () {
+//include("/var/www/functions/sec2hms.php");
+
+$artist = $this->artist();
+$album = $this->album();
+$title = $this->title();
+
+?>
+<P><B><font size="5" color="#ffffff"><?php echo $title; ?></B></P>
+<?php
+}
+
+}
+?>

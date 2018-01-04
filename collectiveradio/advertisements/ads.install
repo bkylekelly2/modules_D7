@@ -1,0 +1,28 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the ads module.
+ *
+ */
+
+/**
+ * Implements hook_install() */
+
+function ads_install() {
+
+}
+
+/**
+ * Implements hook_uninstall().*/
+
+function ads_uninstall() {
+
+}
+
+/**
+ * Implements hook_schema().
+ 
+function ads_schema() {
+
+}
+*/

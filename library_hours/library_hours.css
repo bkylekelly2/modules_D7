@@ -1,0 +1,407 @@
+/* Header hours block (week view) from gelmanWeek(). */
+
+#header-hours {
+  float: right;
+  font-family: helvetica, arial;
+  font-size: .7em;
+}
+#header-hours .handheld { display: none; }
+#header-hours .header-hours-error { margin-top: 1em; color: #005581; }
+#header-hours table {
+  border-spacing: 0;
+  float: right;
+}
+#header-hours table td {
+  padding: .3em .4em;
+  margin: 0;
+  border-left: 4px solid #fff;
+  max-width: 52px;
+  white-space: initial;
+}
+#header-hours table tr:first-child {
+  background-color: #fff;
+  color: #005581;
+}
+#header-hours table tr:first-child td {
+  padding-left: 0;
+  font-size: 1.1em;
+}
+#header-hours table tr:nth-child(2) {
+  background-color: #005581;
+  color: #fff;
+}
+#header-hours table tr:nth-child(3) {
+  color: #005581;
+}
+#header-hours table tr:nth-child(4) td {
+  color: #005581 !important;
+  text-align: right;
+  padding-right: 0;
+  padding-top: .4em;
+  font-size: 1.1em;
+  padding-bottom: 0;
+}
+#header-hours table tr:nth-child(4) td a {
+  color: #005581;
+  text-decoration: none;
+}
+#header-hours table tr:nth-child(4) td a:hover {
+  text-decoration: underline;
+}
+#header-hours table tr:nth-child(2) td:first-child, #header-hours table tr:nth-child(3) td:first-child {
+  background-color: #005581;
+  color: #fff;
+  padding-left: .6em;
+  font-weight: bold;
+}
+#header-hours table tr:first-child td:first-child {
+}
+#header-hours table tr:nth-child(3) td:first-child {
+}
+#header-hours .container {
+  padding:7px 0;
+}
+
+/* Styling for Gelman hours box (today's hours) block. */
+
+#block-library_hours-library_hours_all { margin-top: -3em; }
+.hoursText { margin-bottom: 0.6em; }
+.hoursToday { font-weight: bold; }
+.hoursDay { font-weight: bold; }
+.gelman-hours { 
+  margin-top: 1em;
+  margin-bottom: .2em; 
+}
+.gelman-hours-day {
+    display: inline-block;
+    margin-bottom: .3em;
+    margin-top: .2em;
+}
+.gelman-hours-day-suffix { display: none; }
+.gelman-hours-time { font-size: 1.2em; }
+.library-hours-last { margin-top: 1em; }
+
+/* Styling for main Hours page block. */
+
+#block-library_hours-library_hours_all .equalHMRWrap {
+  /*justify-content: space-between;*/
+  flex-wrap: wrap;
+}
+#block-library_hours-library_hours_all .eqWrap {
+  display: flex;
+}
+#block-library_hours-library_hours_all .eq {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-left: 0;
+}
+#block-library_hours-library_hours_all .headHMR .eq {
+  padding-bottom: 0;  
+  border: none;
+}
+#block-library_hours-library_hours_all .headTitleHMR.eq { padding-left: 0; }
+.eq:first-child {
+  color: #fff;
+  border-left: 1px solid #ccc;
+  background: #005581;
+  border: 1px solid #fff;
+}
+#block-library_hours-library_hours_all .headHMR .eq:first-child {
+  color: #333;
+  background: #fff;
+  border: none;
+}
+#block-library_hours-library_hours_all .eq:nth-of-type(odd) {
+  /*background: yellow;*/
+}
+#block-library_hours-library_hours_all .eq:nth-of-type(even) {
+  /*background: lightblue;*/
+}
+#block-library_hours-library_hours_all .paddingBlock {
+  padding: 0;
+}
+#block-library_hours-library_hours_all .paddingBlock h3 { 
+  font-weight: bold; 
+  margin: 0; 
+}
+#block-library_hours-library_hours_all .equalHMR {
+  width: 12%;
+  margin-bottom: 2%;
+}
+#block-library_hours-library_hours_all .headHMR .headTitleHMR {
+  min-width: 30%;
+  margin-bottom: 0;
+} 
+#block-library_hours-library_hours_all .headHMR .headTextHMR {
+  min-width: 56%;
+  margin-bottom: 0;
+}
+
+.hours-joiner { font-size: 90%; }
+
+/* MEDIA QUERIES */
+
+@media screen and (max-width:965px) {
+  #topheader-container #header-hours {
+    margin-right: .5em;
+    display: inline-block;
+    overflow: hidden;
+    max-width: 62%;
+    white-space: nowrap;
+  }
+}
+
+@media screen and (max-width:950px) {
+  #block-library_hours-library_hours_all .equalHMR { width: 11%; }
+}
+
+@media screen and (max-width:850px) {
+  #block-library_hours-library_hours_all .headHMR .headTitleHMR {
+    width: 90%;
+  }
+  #block-library_hours-library_hours_all .headHMR .headTextHMR {
+    padding-left: 0;
+    padding-top: 1px;
+  }
+}
+
+@media screen and (max-width:750px) {
+  #block-library_hours-library_hours_all .equalHMR { width: 10%; }
+}
+
+@media screen and (max-width:720px) {
+  #topheader-container #header-hours { height: 50px; }
+  #header-hours table { margin-bottom: 0; }
+  #header-hours table tr:first-child { display: none; }
+  #header-hours .container { padding: 7px 0 0 !important; }
+  #header-hours table { display: none; }
+  #header-hours #mini_hours { display: none; }
+  #header-hours .handheld { display: inline-block }
+  #header-hours .handheld {
+    display: inline-block;
+    margin-right: 4px;
+  }
+  #header-hours .handheld > * {
+    color: #005581;
+    display: block;
+  }
+  #header-hours .handheld-hours { font-size: 1.4em; margin-top: 4px; }
+  #header-hours .handheld-hours-links { font-size: 1.2em; margin-top: 6px; text-align: right; }
+  #header-hours .handheld-hours-links a { color: #005581; text-decoration: none; font-style: italic; }
+  #header-hours .handheld-hours-links a:hover { text-decoration: underline; }
+}
+
+@media screen and (max-width:640px) {
+  #block-library_hours-library_hours_all .equalHMR { width: 21%; }
+  #block-library_hours-library_hours_all .eq { padding: 6px; }
+  #block-library_hours-library_hours_all .eq:nth-child(5) { border-left: 1px solid #ccc; }
+  #block-library_hours-library_hours_all .paddingBlock h3 { margin-top: 0.5em; }
+}
+
+@media screen and (max-width:360px) {
+  #topheader-container #header-hours { max-width: 50%; }
+}
+
+#block-library_hours-library_hours_all {margin-top:-3em;}
+
+.hoursText {margin-bottom:0.6em;}
+.hoursToday {font-weight:bold;}
+.hoursDay {font-weight:bold;}
+.equalHMRWrap {
+	/*justify-content: space-between;*/
+	flex-wrap: wrap;
+}
+.eqWrap {
+	display: flex;
+}
+.eq {
+	padding: 10px;
+        border: 1px solid #ccc;
+        border-left: 0;
+}
+.headHMR .eq {
+  padding-bottom: 0;  
+  border: none;
+}
+
+.headTitleHMR.eq {padding-left: 0;}
+
+.eq:first-child {
+  border-left: 1px solid #ccc;
+}
+
+.current-day {
+  color: #fff;
+  background: #005581;
+  border: 1px solid #005581;
+}
+
+.headHMR .eq:first-child {
+  color: #333;
+  background: #fff;
+  border: none;
+}
+
+.eq:nth-of-type(odd) {
+	/*background: yellow;*/
+}
+
+.eq:nth-of-type(even) {
+	/*background: lightblue;*/
+}
+.paddingBlock {
+	padding: 0;
+}
+.paddingBlock h3 {font-weight:bold; margin:0;}
+
+.equalHMR {
+	width: 12%;
+	margin-bottom: 2%;
+}
+
+.headHMR .headTitleHMR {
+  min-width: 30%;
+  margin-bottom: 0;
+} 
+
+.headHMR .headTextHMR {
+  min-width: 56%;
+  margin-bottom: 0;
+}
+
+.hours-joiner {font-size: 90%;}
+
+@media screen and (max-width:950px) {
+  .equalHMR {width:11%;}
+}
+
+@media screen and (max-width:850px) {
+  .headHMR .headTitleHMR {
+    width: 90%;
+  }
+  .headHMR .headTextHMR {
+    padding-left: 0;
+    padding-top: 1px;
+  }
+}
+@media screen and (max-width:750px) {
+  .equalHMR {width:10%;}
+}
+@media screen and (max-width:640px) {
+  .equalHMR {width:21%;}
+  .eq {padding: 6px;}
+  .eq:nth-child(5) {border-left: 1px solid #ccc;}
+  .paddingBlock h3 {margin-top:0.5em;}
+}
+.overview-box {border:solid 2px #ccc; width:30%;}
+@media (max-width:900px) {
+  .overview-box {width:84%;}
+}
+
+.box{
+	width:100%;
+	border:1px solid #999;
+	padding:10px;
+	background-color:#FCFCFC;	
+}
+
+.div-margin{
+	margin-top:50px;
+}
+/*
+#title{
+	width:250px;
+}
+*/
+.error{
+	border:1px solid #990000;
+}
+#div_show_hours_form{
+	cursor:pointer;	
+}
+#div_show_hours_details{
+	cursor:pointer;	
+}
+#div_holiday{
+	display:none;
+}
+
+
+
+.description {
+  font-size: .85em;
+  color: #666;
+}
+
+#div_confirm_delete_title{
+	font-weight:700;
+	color:#990000;
+	margin-top:.5em;
+	margin-bottom:.5em;
+}
+
+#div_library_hours_special{
+	display:none;
+	
+}
+
+#div_library_hours{
+	display:none;
+}
+
+#header-hours .eq {
+  padding: 3px;
+  border: 1px solid #fff;
+  display: table-cell;
+}
+
+#header-hours .eq:first-child {
+  color: #fff;
+}
+
+#header-hours br {
+  display: none;
+}
+
+#header-hours .hoursToday, #header-hours .hoursDay {
+  padding: 3px;
+  margin: -3px -3px 3px;
+  display: block;
+  font-weight: normal;
+}
+
+#header-hours .hoursToday {
+  text-transform: uppercase;
+}
+
+#header-hours .hoursDay {
+  background-color: #005581;
+  color: #fff;
+}
+
+#mini_hours_title, #mini_hours_links {
+  font-size: 1.1em;
+  padding: .3em 0;
+}
+
+#mini_hours_links {
+  text-align: right;
+}
+
+#header-hours .equalHMR {
+  box-sizing: border-box;
+  width: 14.28571428571429%;
+}
+
+#header-hours {
+  white-space: normal !important;
+  color: #005581;
+}
+
+#div_body {
+  display:none;
+}
+
+#header-hours .eqWrap {
+  max-width: 400px;
+}

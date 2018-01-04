@@ -1,0 +1,490 @@
+<?php 
+
+function events_cron(){
+//ingest_events_live();
+}
+    /**
+    * Implements hook_menu().
+    */
+function events_menu() {
+		
+		
+	$items['events/events_to_ingest'] = array(
+        'title' => 'Get Events to Refresh',
+        'page callback' => 'events_get_refreshed_events',
+        'access arguments' => array('access content'),
+      );
+		
+		
+		
+	$items['events/ingest_events'] = array(
+        'title' => 'Ingest Events',
+        'page callback' => 'events_ingest_events',
+        'access arguments' => array('access content'),
+      );
+		
+		
+
+	$items['events/refresh_events'] = array(
+        'title' => 'Set Refreshed Events To No',
+        'page callback' => 'reset_refreshed_events',
+        'access arguments' => array('access content'),
+      );
+		
+		
+
+	$items['events/delete_events'] = array(
+        'title' => 'Delete Events',
+        'page callback' => 'delete_events',
+        'access arguments' => array('access content'),
+      );
+     
+      return $items;
+}
+
+   /**
+    * Custom callback functions.
+    */
+
+function reset_refreshed_events(){
+
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'venue')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->addMetaData('account', user_load(1)); // Run the query as user 1.
+$result = $query->execute();
+if (isset($result['node'])) {
+  $venue_nids = array_keys($result['node']);
+}
+	
+foreach ($venue_nids as $venue_nid){
+	
+	$new_revision = node_load($venue_nid);
+	$new_revision->field_refreshed_events[und][0]['value'] = "No";
+	try{
+	  // Save the new revision first
+	node_save($new_revision);
+		drupal_goto('<front>');
+		drupal_set_message("All Venue Refreshed Events Set to NO");
+	}
+
+	catch (Exception $e) {
+		drupal_goto('<front>');
+		drupal_set_message("There was an error setting Refreshed to No " . $e);
+	}
+  
+	
+}
+	
+}
+function events_list_events_callback() { ?>
+<a href="https://www.collectiveradio.com/events/events_to_ingest">Get Events</a>
+<?php }
+	
+function get_fp_events_carousel_items(){
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'event')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->addTag('random')
+  ->range(0, 3)
+  ->addMetaData('account', user_load(1)); // Run the query as user 1.
+$result = $query->execute();
+if (isset($result['node'])) {
+  $event_nids = array_keys($result['node']);
+}
+
+$y=0;
+print '
+<!-- Indicators -->
+  <ol class="carousel-indicators">
+';
+  
+foreach($event_nids as $_nid){ ?>
+<li data-target="#myCarousel" data-slide-to="<?php echo $y; ?>" class="<?php if ($y===0) echo 'active'; ?>"></li>
+<?php $y++; } 
+
+print '
+</ol>
+<div class="carousel-inner" role="listbox">
+';  
+
+
+$i=0;
+foreach($event_nids as $_nid){
+$event = node_load($_nid);
+$event = objectToArray($event);
+	//print_r($event); exit;
+$url = "https://www.collectiveradio.com/".drupal_get_path_alias('node/'.$_nid.'');
+$title = $event['title'];
+$venue = node_load($event['field_venue_reference']['und'][0]['target_id']);
+$venue = objectToArray($venue);
+$date = date("M j Y g:i A",$event['field_date']['und'][0]['value']);
+$image = "https://www.collectiveradio.com/sites/default/files/".$event['field_image']['und'][0]['filename'];
+$cover = "https://www.collectiveradio.com/sites/default/files/".$event['field_cover']['und'][0]['filename'];
+switch($i){
+case "0":
+$slide = "first";
+break;
+case "1":
+$slide = "second";
+break;
+case "2":
+$slide = "third";
+break;
+}
+?>
+<div class="item <?php if ($i===0) echo 'active'; ?>">
+  <img class="<?php echo $slide; ?>-slide img-responsive" src="<?php echo $cover; ?>" alt="<?php echo $title; ?>">
+	<div class="carousel-caption" style="z-index:100;">
+	  <h2 style="background-color:#ffffff;opacity:.5;width:100%;"><a href="<?php echo $url; ?>"><font color="#990000;"><?php echo $title; ?></font></a></h2>
+  </div>
+</div>
+<?php
+$i++; }	
+?>
+
+<?php }
+
+function events_get_refreshed_events(){
+	
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  //->entityCondition('bundle', array('artist','venue'), 'IN')
+  ->entityCondition('bundle', 'venue', '=')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->fieldCondition('field_refreshed_events', 'value', 'No', '=')
+  ->range(0, 1)
+  // Run the query as user 1.
+  ->addMetaData('account', user_load(1));
+
+$result = $query->execute();
+if (isset($result['node'])) {
+  $eventID = array_keys($result['node']);
+} 
+$nodeID = $eventID[0];
+
+
+if ($nodeID<>""){
+$destination = 'https://www.collectiveradio.com/events/ingest_events?nodeID='.$nodeID.'';
+} else {   
+$destination = 'https://www.collectiveradio.com/';
+}
+
+echo '
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Get List of Pages to Refresh</title>
+</head>
+
+<body onload="document.formtopost.submit()">
+<form action="'.$destination.'" method="post" id="formtopost" name="formtopost"></form>
+</body>
+</html>';	
+}
+
+function events_ingest_events(){
+	
+	
+$node = node_load($_REQUEST['nodeID']);
+$node = (objectToArray($node));
+
+$referring_node_type = $node['type'];
+
+$nodeID = $node['nid'];
+
+
+//print_r($node); exit;
+
+$pageID = $node['field_facebook_page_id'][und][0]['value'];
+
+$token = get_facebook_settings_default();
+
+$data_base = 'https://graph.facebook.com/v2.8/'.$pageID.'/events?fields=id&access_token=';
+if ($_REQUEST['after']==""){
+$url = $data_base.$token;
+} else {
+$url = $data_base.$token.'&after='.$_REQUEST['after'].'';
+}
+
+$facebookEvents = file_get_contents($url);
+$eventsArray = drupal_json_decode($facebookEvents);
+$data = $eventsArray['data'];
+$paging = $eventsArray['paging'];
+
+
+//here comes the pain!
+foreach($data as $key1 => $value1){
+$url = 'https://graph.facebook.com/v2.8/'.$value1['id'].'?access_token='.$token;
+$contents = file_get_contents( $url );
+if( $contents ){
+$data = json_decode( $contents, true );
+$_description = $data[description];
+$_eventID = $data[id];
+$_end_time = strtotime($data[end_time]);
+$_start_time = strtotime($data[start_time]);
+$_title = $data[name];
+$_placeName = $data[place][name];
+$_placeID = $data[place][id];
+$_locationstreet = $data[place][location][street];
+$_locationcity = $data[place][location][city];
+$_locationstate = $data[place][location][state];
+$_locationzip = $data[place][location][zip];
+$_locationcountry = $data[place][location][country];
+}
+
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'event')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->fieldCondition('field_facebook_event_id', 'value', $_eventID, '=')
+  // Run the query as user 1.
+  ->addMetaData('account', user_load(1));
+
+$result = $query->execute();
+	
+if (!isset($result['node'])) {
+	if ($_start_time>time()){ //if the event is in the future
+	
+//access the cover file, save it temporarily to a variable
+$remote_cover = 'https://graph.facebook.com/v2.8/'.$value1['id'].'?fields=cover&access_token='.$token;
+$remote_cover = file_get_contents( $remote_cover );
+
+if( $remote_cover ){
+$rawdata = json_decode( $remote_cover, true );
+$pic_cover = $rawdata[cover][source]; //now the raw data can be put into an <img src=$rawdata>
+}
+
+//echo '<img src='.$pic_cover.' />'; exit;
+
+if ($pic_cover){
+//get the cover file copied and saved locally
+$new_pic_cover = $_SERVER['DOCUMENT_ROOT']."/uploads/".(time()+rand(1,250)).".jpg"; //set the name and destination of the incoming image
+copy($pic_cover,$new_pic_cover); //copy from remote source to local file, $new_pic_cover  
+// Create image File object and associate with cover field.
+$file = new StdClass();
+$file->uid = 1;
+$file->uri = $new_pic_cover; //this is the new image file we just downloaded and saved
+$file->filemime = file_get_mimetype($file->uri);
+$file->status = 1;
+$file->alt = $_title;
+$file->title = $_title;
+$file->display = 1;
+$file->description = "";  
+$dest = 'public://';
+$cover = file_copy($file, $dest);
+unlink($new_pic_cover); //destroy the $new_pic_cover;
+}
+//now get the picture file saved locally
+
+$remote_picture = 'https://graph.facebook.com/v2.8/'.$value1['id'].'/picture?type=large&access_token='.$token;
+
+if ($remote_picture){
+$local_picture = $_SERVER['DOCUMENT_ROOT']."/uploads/".(time()+rand(1,250)).".jpg";
+copy($remote_picture,$local_picture);
+
+	// Create image File object and associate with image field.
+	$file = new StdClass();
+	$file->uid = 1;
+	$file->uri = $local_picture; //this is the new image file we just downloaded and saved
+	$file->filemime = file_get_mimetype($file->uri);
+	$file->alt = $_title;
+    $file->title = $_title;
+	$file->status = 1;
+	$file->display = 1;
+	$file->description = "";  
+	$dest = 'public://';
+	$image = file_copy($file, $dest);
+  unlink($local_picture); //destroy the $local_picture;
+
+}
+
+  $event = new stdClass();
+  $event->title = $_title;
+  $event->type = "event";
+  node_object_prepare($event); // Sets some defaults. Invokes hook_prepare() and hook_node_prepare().
+  $event->language = LANGUAGE_NONE; // Or e.g. 'en' if locale is enabled
+  $event->body[$event->language][0]['format'] = 'full_html';
+  $event->body[$event->language][0]['summary'] = text_summary($_description);
+  $event->body[$event->language][0]['value'] = $_description;
+  $event->uid = 1; 
+  $event->status = 1; //(1 or 0): published or not
+  $event->promote = 0; //(1 or 0): promoted to front page
+  $event->comment = 0; // 0 = comments disabled, 1 = read only, 2 = read/write
+  $event->field_venue_reference[$event->language][0]['target_id'] = $nodeID; $event->field_facebook_event_id[$event->language][0]['value'] = $_eventID;
+  $event->field_date[$event->language][0]['value'] = $_start_time;
+  $event->field_cover[$event->language][0] = (array)$cover;
+  $event->field_image[$event->language][0] = (array)$image;
+
+	//now perform the save
+
+	try {
+		
+		  $event = node_submit($event); // Prepare node for saving
+		  node_save($event); //save node
+		  $success = TRUE;
+		  
+	}
+
+	catch (Exception $e) {
+	  // Do your error handling here.
+	}
+
+   }//if ($_start_time>time()){
+  }//if (!isset($result['node'])) {
+
+} /// end foreach
+$after=$paging['cursors']['after'];
+//https://graph.facebook.com/v2.8/448025055499/events?access_token=987733174652726|2c3e415ea23bf08316d4cd36cefa39b4&fields=id&limit=25&after='.$after
+
+if ($after<>""){
+$destination = 'https://www.collectiveradio.com/events/ingest_events?after='.$after.'&nodeID='.$nodeID.'';
+} else { 
+
+  $new_revision = node_load($nodeID);
+  $new_revision->field_refreshed_events[und][0]['value'] = "Yes";
+
+  // Save the new revision first
+  node_save($new_revision);
+  
+$destination = 'https://www.collectiveradio.com/events/events_to_ingest';
+}
+
+echo '
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>'.$after.'</title>
+</head>
+
+<body onload="document.formtopost.submit()">
+<form action="'.$destination.'" method="post" id="formtopost" name="formtopost"></form>
+</body>
+</html>';	
+}
+
+function events_get_events(){
+	
+$time = time();
+
+
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'event')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->fieldCondition('field_date', 'value', $time, '>=')
+  ->fieldOrderBy('field_date', 'value', 'ASC')
+  //->range(0, 8)
+  // Run the query as user 1.
+  ->addMetaData('account', user_load(1));
+
+$result = $query->execute();
+if (isset($result['node'])) {
+  $events = array_keys($result['node']);
+}
+	
+print_r($events);
+
+}
+
+
+function get_list_of_formatted_events2($events){ /*?>
+	
+	<div class="row">
+			<div class="[ col-xs-12 col-sm-12 col-md-3 col-lg-3 ]">
+			
+			
+			
+				<ul class="event-list">
+					<?php foreach($events as $nid){ 
+					$event = objectToArray(node_load($nid));
+	                $url = drupal_get_path_alias('node/'.$nid.'');
+
+					?>
+					
+					<li>
+						<time datetime="<?php echo date('Y-m-d h:i',$event['field_date'][und][0]['value']);?>" >
+							<span class="day"><?php echo date('d',$event['field_date'][und][0]['value']);?></span>
+							<span class="month"><?php echo date('M',$event['field_date'][und][0]['value']);?></span>
+							<span class="year"><?php echo date('Y',$event['field_date'][und][0]['value']);?></span>
+						</time>
+						<img alt="<?php echo $event['title'];?>" src="https://www.collectiveradio.com/sites/default/files/<?php echo $event['field_image'][und][0]['filename'];?>" /> 
+						<div class="info">
+							<h2 class="title"><a href="<?php echo $url; ?>"><?php echo $event['title'];?></a></h2>
+							<p class="desc"><?php echo $event['body'][und][0]['summary'];?></p>
+						</div>
+					</li>
+					
+					<?php } ?>
+
+				</ul>
+			</div>
+		</div>
+	
+<?php */ }
+
+function events_get_event($nid){
+
+$event = objectToArray(node_load($nid));
+$src = "https://www.collectiveradio.com/sites/default/files/".$event['field_cover'][und][0]['filename'];
+$description = $event['body'][und][0]['safe_value'];
+$date = date("M j, Y g:i a",$event['field_date'][und][0]['value']);
+$title = $event['title'];
+$ticketID = $event['field_ticket'][und][0]['target_id'];
+$venueID = $event['field_venue_reference'][und][0]['target_id'];
+$venue = objectToArray(node_load($venueID));
+$venue = $venue['title'];
+$venue_url = drupal_get_path_alias('node/'.$venueID.'');
+//$artist = $event['field_artist_reference'][und][0]['target_id'];
+//$artist = objectToArray(node_load($artist));
+//$artist = $artist['title'];
+	
+
+$event = objectToArray(node_load($nid));
+	        $url = drupal_get_path_alias('node/'.$nid.'');
+?>
+
+
+
+						<img alt="<?php echo $event['title'];?>"  src="https://www.collectiveradio.com/sites/default/files/<?php echo $event['field_image'][und][0]['filename'];?>" /> 
+						<div class="info">
+							<h2 class="title"><a href="<?php echo $url; ?>"><?php echo $event['title'];?></a></h2>
+						</div>
+
+<?php }
+
+function delete_events(){
+	$node_type = 'event';
+
+	// Select the nodes that we want to delete.
+	$result = db_select('node', 'n')
+			  ->fields('n', array('nid'))
+			  ->condition('type', $node_type, '=')
+			  ->execute();
+
+	$deleted_count = 0;
+	foreach ($result as $record) {
+	  node_delete($record->nid);
+	  $deleted_count++;
+	}
+// Simple debug message so we can see what had been deleted.
+drush_print("$deleted_count nodes have been deleted");
+}
+
+function get_remaining_seconds(){
+// this get the timestamp for the top of next hour
+//then it gets the current timestamp
+//finally it subtracts now from then and gets us
+//the number of seconds until the top of next hour
+$top_of_the_hour = strtotime(date("Y-m-d G:59:59", time()));
+$top_of_the_hour = ($top_of_the_hour+1);
+$seconds_now = time();
+$remaining_seconds = ($top_of_the_hour-$seconds_now);
+echo $remaining_seconds;
+}

@@ -1,0 +1,628 @@
+<?php
+
+function collectiveradio_init() {
+
+	
+}
+
+function get_session_id(){
+	return session_id();
+}
+
+function collectiveradio_menu(){
+
+
+
+	$items = array();
+
+	//Display Table
+
+	
+	
+	$items['user/collectiveradio'] = array(
+
+		'title' => "Welcome To CollectiveRadio",
+
+		'page callback' => 'collectiveradio_function',
+
+    	'access arguments' => array("access content"),
+
+    	'type' => MENU_NORMAL_ITEM,
+
+	);
+	
+	$items['user/custom_registration'] = array(
+
+		'title' => "Custom Registration",
+
+		'page callback' => 'custom_registration_callback',
+
+    	'access arguments' => array("access content"),
+
+    	'type' => MENU_NORMAL_ITEM,
+
+	);
+	
+	$items['user/ingest_audio'] = array(
+
+		'title' => "Ingest User Audio",
+
+		'page callback' => 'ingest_audio_callback',
+
+    	'access arguments' => array("access content"),
+
+    	'type' => MENU_NORMAL_ITEM,
+
+	);
+	
+	$items['user/upload_media'] = array( //this creates a URL that will call this form at "examples/form-example"
+    'title' => 'Upload Media', //page title
+    'description' => 'A form to upload media.',
+    'page callback' => 'drupal_get_form', //this is the function that will be called when the page is accessed.  for a form, use drupal_get_form
+    'page arguments' => array('upload_form'), //put the name of the form here
+    'access callback' => TRUE
+  );
+	
+		
+	return $items;
+}
+
+/*
+ * Returns custom content to Drupal
+ */
+
+function collectiveradio_function(){
+
+	  return theme('collectiveradio_template');
+	
+}
+function ingest_audio_callback(){
+
+	ingest_audio();
+	
+}
+
+function user_orders_callback(){
+	
+	///
+}
+function collectiveradio_theme(){
+  return array(
+    'collectiveradio_template' => array(
+      // template file name will be collectiveradio-page.tpl.php
+      'template' => 'collectiveradio-page',
+    ),
+  );
+}
+
+function collectiveradio_hook_init() {    
+
+}
+
+
+
+function collectiveradio_cron(){
+
+
+}
+
+function get_search_form($search_terms){ ?>
+	
+ <form method="post" action="/search"><input name="terms" id="terms" type="text" class="form-control" placeholder="Search for..." size="20" value="<?php echo $search_terms; ?>" ></form>	
+	
+<?php }
+
+function upload_form($form, &$form_state) {
+
+  $form['audio'] = array(
+    '#type'          => 'media',
+    '#title'         => 'Audio',
+    '#description'   => 'This is a user generated audio file.',
+    '#theme'         => 'media_widget', // Without that, you only get text input
+    //'#default_value' => variable_get('audio_saved', NULL), //The fid
+    '#media_options' => array(
+      'global' => array(
+        'file_directory'  => 'audio',
+        'enabledPlugins'  => array( // Not needed if you want to enable all the plugins
+          'upload',
+          'media_default--media_browser_my_files'
+        ),
+        'file_extensions' => 'mp3',
+        'max_filesize'    => '256 MB',
+        'uri_scheme'      => 'private',
+        'types'           => array('audio'),
+        'schemes'         => array(
+          'public' => 'private',
+        ),
+      ),
+    ),
+  );
+
+	
+  $form['submit_button'] = array(
+    '#type' => 'submit',
+    '#value' => t('Click Here!'),
+  );
+  
+  return $form;
+}
+
+function upload_form_validate($form, &$form_state) {
+//	if (!($form_state['values']['price'] > 0)){
+  //  form_set_error('price', t('Price must be a positive number.'));
+  //}
+}
+
+function upload_form_submit($form, &$form_state) {
+}
+
+function set_registration_variables(){
+	
+	
+	
+	
+	
+	
+}
+
+function do_custom_regstration(){
+require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
+	
+	$email = $_POST['cr_email'];
+	$name = $_POST['cr_name'];
+	$password = $_POST['cr_pass'];
+	
+
+$sql = " SELECT `UID` FROM `users` WHERE `MAIL` = '".$email."' ";
+$result = db_query($sql);
+$isUniqueEmail = $result->rowcount(); //0 means YES 1 means NO!!
+
+
+$sql = " SELECT `UID` FROM `users` WHERE `NAME` = '".$name."' ";
+$result = db_query($sql);
+$isUniqueName = $result->rowcount(); //0 means YES 1 means NO!!
+
+
+if ( ($isUniqueName==1) ) {
+  drupal_set_message('That username is already taken! Please enter a new username.',$type = 'error');
+}
+	
+if ( ($isUniqueEmail==1) ) {
+  drupal_set_message('That email is already taken! Please enter a new email.',$type = 'error');
+}
+
+// If the user name is taken, append a random string to the end of it.
+//encode the user password
+
+if ( ($isUniqueName==0) && ($isUniqueEmail==0) ) {
+
+$password = user_hash_password($password);
+
+
+// Build the user account object and then save it.
+$account = new stdClass();
+$account->name = $name;
+$account->mail = $mail;
+$account->init = $mail;
+$account->pass = $password;
+$account->status = 1;
+user_save($account);
+if ($account->uid) {
+  drupal_set_message('Welcome To Collective Radio!!');
+}
+	
+if ($uid = user_authenticate($name, $password)) {
+  global $user;
+  $user = user_load($uid);
+
+  $login_array = array ('name' => $name);
+  user_login_finalize($login_array);
+}
+
+	drupal_goto('https://www.collectiveradio.com/user');
+
+} else {
+	
+	drupal_goto('https://www.collectiveradio.com/user/register');
+}
+	
+}
+
+function ingest_audio(){
+	
+$uid = (arg(2)); 
+
+$target_dir = $_SERVER['DOCUMENT_ROOT']."/uploads/";
+$target_file = $target_dir . basename($_FILES["audio_file"]["name"]);
+$uploadOk = 1;
+$audioFileType = pathinfo($target_file,PATHINFO_EXTENSION);
+
+$filename = $_FILES["audio_file"]["name"];
+$filename = substr($filename, 0, -4);
+$filename = str_replace("_"," ",$filename);
+$filepath = "https://www.collectiveradio.com/sites/default/files/".$_FILES["audio_file"]["name"];
+
+$finfo = new finfo(FILEINFO_MIME_TYPE);
+$fileContents = file_get_contents($_FILES['audio_file']['tmp_name']);
+$mimeType = $finfo->buffer($fileContents);
+	
+$maxfilesize = (1024*1024*10);
+// Check file size
+if ($_FILES["audio_file"]["size"] > $maxfilesize) {
+    echo "Sorry, your file is too large.";
+    $uploadOk = 0;
+}
+// Allow certain file formats
+if($mimeType != "audio/mpeg" ) {
+    echo "Sorry, only MP3 files are allowed.";
+    $uploadOk = 0;
+}
+// Check if $uploadOk is set to 0 by an error
+if ($uploadOk == 0) {
+    echo "Sorry, your file was not uploaded.";
+// if everything is ok, try to upload file
+} else {
+    if (move_uploaded_file($_FILES["audio_file"]["tmp_name"], $target_file)) {
+        echo "The file ". basename( $_FILES["audio_file"]["name"]). " has been uploaded.";
+    } else {
+        echo "Sorry, there was an error uploading your file.";
+    }
+}
+
+if ($uploadOk<>0){
+	// Create image File object and associate with image field.
+	$audio_file = new StdClass();
+	$audio_file->uid = $uid;
+	$audio_file->uri = $target_file; //this is the new image file we just downloaded and saved
+	$dest = 'public://';
+	$mp3 = file_move($audio_file, $dest);
+
+
+
+  $audio = new stdClass();
+  $audio->title = $filename;
+  $audio->type = "audio";
+  node_object_prepare($audio); // Sets some defaults. Invokes hook_prepare() and hook_node_prepare().
+  $audio->language = LANGUAGE_NONE; // Or e.g. 'en' if locale is enabled
+  $audio->body[$audio->language][0]['format'] = 'full_html';
+  $audio->body[$audio->language][0]['summary'] = text_summary($_description);
+  $audio->body[$audio->language][0]['value'] = $_description;
+  $audio->uid = $uid; 
+  $audio->status = 1; //(1 or 0): published or not
+  $audio->promote = 0; //(1 or 0): promoted to front page
+  $audio->comment = 0; // 0 = comments disabled, 1 = read only, 2 = read/write
+  $audio->field_audio[$audio->language][0]['value'] = $filepath;
+
+	//now perform the save
+	try {
+		
+		  $audio = node_submit($audio); // Prepare node for saving
+		  node_save($audio); //save node
+		  $success = TRUE;
+		  
+	}
+
+	catch (Exception $e) {
+	  // Do your error handling here.
+		echo "didn't save";
+	}
+
+}
+	
+}
+
+
+
+/*	
+function get_search_results(){
+
+$search_terms =	$_POST['terms'];
+	//echo $search_terms; exit;
+
+	get_search_form($search_terms);
+	print '<div id="div_search_results" ><b>Search Results</b> </div>';
+	
+	if ($search_terms<>""){	
+		$server = search_api_server_load('search_server');
+		$index = search_api_index_load('default_node_index');
+		$query = new SearchApiQuery($index);
+		$query->keys($search_terms);
+		$query->fields(array('body:value'));
+		$srv= new SearchApiDbService($server);
+		$result = $srv->search($query);
+		$nids = (array_keys($result['results']));
+
+		$count = count($nids);
+
+			foreach($nids as $nid){
+			$node = objectToArray(node_load($nid));
+			$type = $node['type'];
+				if ($type<>'page'){
+				$title = $node['title'];
+				$body = $node['body']['und']['0']['safe_value'];
+				$created = date("Y-m-d H:i",$node['created']);
+					$url =  drupal_get_path_alias('node/'.$nid);
+
+				print '<div id="divFull" class="search_results well" ><h3><a href="https://www.collectiveradio.com/'.$url.'">'.$title.'</a></h3><p>'.$body.'</p></div>';
+				}
+
+			}
+}
+		if ($count==0){	print "Your search resulted in no matches. ";	}
+	
+	
+}
+*/
+
+function get_facebook_settings_default(){
+	return '987733174652726|2c3e415ea23bf08316d4cd36cefa39b4';
+}
+function collectiveradio_query_random_alter($query){
+  $query->orderRandom();
+}
+
+function objectToArray( $data ) {
+	$d = "";
+
+    if ( is_object( $data ) ) 
+
+        $d = get_object_vars( $data );
+
+		return $d;
+
+}
+
+function randomize($nids){
+$c1=sizeof($nids)-1;//get position of the last element within the array
+$entity_id=$nids[mt_rand(0,$c1)];//get random
+}
+
+
+
+function get_string_between($string, $start, $end){
+    $string = ' ' . $string;
+    $ini = strpos($string, $start);
+    if ($ini == 0) return '';
+    $ini += strlen($start);
+    $len = strpos($string, $end, $ini) - $ini;
+    return substr($string, $ini, $len);
+}
+
+function get_unique_ids($array1,$array2){
+$output = array_diff(array_merge($array1, $array2), array_intersect($array1, $array2));
+return($output); 
+}
+
+function get_page_nav(){ 
+global $user; 
+	if(isset($user->name)){
+		$userName = $user->name;
+	}
+	if(isset($user->uid)){
+		$userID = $user->uid;
+	}
+	
+$url = drupal_get_path_alias(current_path());
+
+?>
+
+<!-- Fixed navbar -->
+    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top navbar-custom">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <a style="color:#F3DC0A;position:relative;top:15px;text-decoration:none;font-family:vedana;font-weight:600;font-size:medium;" href="https://www.collectiveradio.com">Collective Radio</a>
+            </div>          
+         
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                     <?php if ( $userID ) { ?>
+                    <li class="page-scroll">
+						<div class="dropdown" id="drpdnusername" >
+						<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top:8px;background-color:#000000; color:#ffffff; font-weight:bold;">
+						<?php echo $userName; ?>
+						</button>
+						<div class="dropdown-menu text-center" aria-labelledby="dropdownMenuButton">
+						<a class="dropdown-item" href="/user" style="color:#000000;">Account</a><BR>
+						<?php if (in_array('administrator', $user->roles)) { ?>
+            			<a href="https://www.collectiveradio.com/admin" style="color:#000000;">Admin</a><BR>
+            			<a class="dropdown-item" href="/cart" style="color:#000000;">Cart</a><BR>
+
+						<a class="dropdown-item" href="/user/logout" style="color:#000000;">Sign Out</a>
+            			<?php } ?>
+						</div>
+						
+						</div>
+									
+					
+						</div>
+                    </li>                   
+                    <?php } ?>
+                     <?php if ( !$userID ) { ?>
+							<li class="page-scroll">
+								<a href="/user/login" style="color:#F3DC0A;text-decoration:none;font-family:vedana;font-weight:600;font-size:medium;">Sign In</a>
+							</li>                   
+                    <?php } ?>
+
+                </ul>
+            </div>
+
+       <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+    
+<?php if (user_is_logged_in()){ ?>
+	<div id="add_margin_bottom_logged_in"></div>
+<?php } else { ?>
+	<div id="add_margin_bottom_not_logged_in"></div>
+<?php } ?>
+
+<?php }
+
+function get_page_footer(){
+		if (arg(0) == 'node') {$nid = arg(1);}
+	$url = drupal_get_path_alias('node/'.$nid.'');
+		?>
+<!-- Footer -->
+    <footer id="footer" class="cr_footer text-center" >
+        <div class="footer-above">
+            <div class="" style="background-color:#191919;">
+              
+          <div class="row" >
+                    <div class="footer-col col-md-4">
+                        <h3>Location</h3>
+                        <p>USA</p>
+                    </div>
+                    <div class="footer-col col-md-4">
+                        <h3>Follow Us</h3>
+                        <ul class="list-inline">
+                            <li>
+                                <a href="https://facebook.com/bestmusicforthemostpeople" class="btn-social btn-outline" target="_blank"><span class="sr-only">Facebook</span><i class="fa fa-fw fa-facebook"></i></a>
+                            </li>
+                            <li>
+                                <a href="http://twitter/masses_radio" class="btn-social btn-outline" target="_blank"><span class="sr-only">Twitter</span><i class="fa fa-fw fa-twitter"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h3>About Collective Radio</h3>
+                        <p>Collective Radio is about Fans, Bands, and Clubs</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-below">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        Copyright &copy; Collective Radio 2017
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+    <div class="scroll-top page-scroll hidden-sm hidden-xs hidden-lg hidden-md">
+        <a class="btn btn-primary" href="#page-top">
+            <i class="fa fa-chevron-up"></i>
+        </a>
+    </div>
+<?php }
+
+
+function get_social_share_buttons(){ 
+	if (arg(0) == 'node') {$nid = arg(1);}
+	$url = drupal_get_path_alias('node/'.$nid.'');
+?><div class="row">
+        <div class="col-xs-12 col-md-12 col-lg-12 col-xl-12 text-center">
+                <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.collectiveradio.com/<?php echo $url;?>"><i class="fa fa-facebook-square fa-3x social" target="_blank"></i></a>
+	            <a href="https://twitter.com/intent/tweet?text=https://www.collectiveradio.com/<?php echo $url;?>"><i class="fa fa-twitter-square fa-3x social" target="_blank"></i></a>            
+            </div>
+    </div>    
+<?php }
+
+function cr_facebook_body(){ ?>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '987733174652726',
+      xfbml      : true,
+      version    : 'v2.9'
+    });
+    FB.AppEvents.logPageView();
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+<?php }
+
+function get_node_description(){
+	
+	 // Get the nid
+	  $nid = arg(1);
+	  $node = objectToArray(node_load($nid));
+	  $description = $node['body']['und'][0]['value'];
+
+echo $description; 	
+}
+
+function get_top_includes() { ?>
+	
+<!-- Latest compiled and minified CSS BOOTSTRAP-->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Custom Fonts -->
+	<link href="/sites/all/themes/mycooltheme/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+	<link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+	<!-- Theme CSS -->
+
+	<!-- Custom CSS -->
+
+	<link href="http://vjs.zencdn.net/6.2.4/video-js.css" rel="stylesheet">
+	
+	<!-- default CSS -->
+	<link href="/sites/all/themes/mycooltheme/css/carousel.css" rel="stylesheet">
+	
+	<!-- default CSS -->
+	<link href="/sites/all/themes/mycooltheme/css/style.css" rel="stylesheet">
+	
+	<!-- social buttons CSS -->
+	<link href="/sites/all/themes/mycooltheme/css/bootstrap-social.css" rel="stylesheet"> 
+
+	<!-- If you'd like to support IE8 -->
+	<script src="http://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+
+	<script src="/sites/all/themes/mycooltheme/js/jquery.js"></script>
+
+	<script>
+	window.HELP_IMPROVE_VIDEOJS = false;
+	</script>
+
+
+
+	<!-- If you'd like to support IE8 -->
+	<script src="http://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+	
+
+	
+	<?php }
+
+function get_bottom_includes(){ ?>
+
+    <!-- jQuery -->
+ <script src="/sites/all/themes/mycooltheme/js/jquery.js"></script>
+
+ <script src="/sites/all/themes/mycooltheme/js/custom.js"></script> 
+
+ <script src="/sites/all/themes/mycooltheme/js/remove_fb_cb.js"></script>
+ <script src="/sites/all/themes/mycooltheme/js/showhide.js"></script>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+   
+
+<script src="http://vjs.zencdn.net/6.2.4/video.js"></script>
+    
+	
+<?php
+}
+
+function get_nowplaying(){ ?>	
+<div><a href="https://www.collectiveradio.com/player" target="_blank" ><span id="headphones" class="glyphicon glyphicon-headphones" aria-hidden="true" ></span> <div class="marquee" style="margin-top:-23px; margin-left:25px;color:#000000;" >
+<div id="nowplaying"  >Welcome To Collective Radio</div>
+</div></a></div>	
+<?php }

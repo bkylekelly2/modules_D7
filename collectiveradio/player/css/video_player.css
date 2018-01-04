@@ -1,0 +1,36 @@
+@media (max-width: 1024px) {
+	#video-player{
+		width:768px;
+		height:432px;
+	}
+}
+
+@media (min-width: 1024px) {
+	#video-player{
+		width:1024px;
+		height:786px;
+	}
+}
+
+@media (max-width: 320px) {
+	#video-player{
+		width:288px;
+		height:216px;
+	}
+}
+
+
+@media (max-width: 768px) {
+	#video-player{
+		width:512px;
+		height:288px;
+	}
+}
+
+
+@media (min-width: 768px) {
+	#video-player{
+		width:512px;
+		height:288px;
+	}
+}

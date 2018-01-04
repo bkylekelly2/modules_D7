@@ -1,0 +1,1705 @@
+<?php
+/**
+ * Implements hook_menu().
+ */
+function library_hours_permission(){
+     return array(
+    'administer library-hours' => array(
+      'title' => t('Library Hours Admin'),
+      'description' => t('Perform administration tasks for Library Hours.'),
+    ),
+  );
+}
+
+function library_hours_menu() {
+  $items = array();
+    $items['library-hours'] = array(
+
+		'title' => "Library Hours",
+
+		'page callback' => 'library_hours_function',
+
+    	'access arguments' => array("access content"),
+
+    	//'type' => MENU_NORMAL_ITEM,
+
+	);
+    $items['library-hours/open'] = array(
+
+		'title' => "Open Library Hours",
+
+		'page callback' => 'library_hours_open_function',
+
+    	'access arguments' => array("access content"),
+
+    	//'type' => MENU_NORMAL_ITEM,
+
+	);
+    $items['library-hours/open-results'] = array(
+
+		'page callback' => 'library_hours_open_results_function',
+
+    	'access arguments' => array("access content"),
+
+    	//'type' => MENU_NORMAL_ITEM,
+
+	);
+    $items['library-hours/view'] = array(
+
+		'title' => "View Library Hours",
+
+		'page callback' => 'library_hours_view_function',
+
+    	'access arguments' => array("access content"),
+
+	);
+    $items['library-hours/edit'] = array(
+
+		'title' => "Edit Library Hours",
+
+		'page callback' => 'library_hours_edit_function',
+
+    	'access arguments' => array("access content"),
+
+	);
+    $items['library-hours/list'] = array(
+
+		'title' => "List Library Hours",
+
+		'page callback' => 'library_hours_list_function',
+
+    	'access arguments' => array("access content"),
+
+	);
+    $items['library-hours/create'] = array(
+
+		'title' => "Create Library Hours",
+
+		'page callback' => 'library_hours_create_function',
+
+    	'access arguments' => array("access content"),
+
+	);
+    $items['library-hours/submit_create'] = array(
+
+		'title' => "Create Library Hours",
+
+		'page callback' => 'library_hours_submit_create_function',
+
+    	'access arguments' => array("access content"),
+
+	);
+    $items['library-hours/confirm_delete'] = array(
+
+		'title' => "Delete Library Hours",
+
+		'page callback' => 'library_hours_confirm_delete_function',
+
+    	'access arguments' => array("access content"),
+
+	);
+    $items['library-hours/submit_edit'] = array(
+
+		'title' => "Edit Library Hours",
+
+		'page callback' => 'library_hours_submit_edit_function',
+
+    	'access arguments' => array("access content"),
+
+	);	
+    $items['library-hours/submit_clone'] = array(
+
+		'title' => "Clone Library Hours",
+
+		'page callback' => 'library_hours_clone_function',
+
+    	'access arguments' => array("access content"),
+
+	);
+    $items['library-hours/display_form_data'] = array(
+
+		'title' => "Edit Library Hours",
+
+		'page callback' => 'library_hours_display_form_data_function',
+
+    	'access arguments' => array("access content"),
+
+	);
+    $items['library-hours/delete'] = array(
+
+		'title' => "Delete Library Hours",
+
+		'page callback' => 'library_hours_delete_function',
+
+    	'access arguments' => array("access content"),
+
+	);
+    $items['library-hours/submit_create_special_hours'] = array(
+
+		'title' => "Delete Library Hours",
+
+		'page callback' => 'library_hours_submit_create_special_hours_function',
+
+    	'access arguments' => array("access content"),
+
+	);
+    $items['library-hours/filter'] = array(
+
+		'page callback' => 'library_hours_filter_function',
+
+    	'access arguments' => array("access content"),
+
+	);
+    $items['library-hours/test'] = array(
+
+		'page callback' => 'library_hours_test_function',
+
+    	'access arguments' => array("access content"),
+
+	);
+return $items;
+}
+function library_hours_function(){
+
+	  return theme('library_hours_template');
+	
+}
+function library_hours_open_function(){
+
+	  return theme('library_hours_open_template');
+	
+}
+function library_hours_view_function(){
+
+	  return theme('library_hours_view_template');
+	
+}
+function library_hours_edit_function(){
+
+	  return theme('library_hours_edit_template');
+	
+}
+function library_hours_list_function(){
+
+	  return theme('library_hours_list_template');
+	
+}
+function library_hours_confirm_delete_function(){
+
+	  return theme('library_hours_confirm_delete_template');
+	
+}
+function library_hours_create_function(){
+
+	  return theme('library_hours_create_template');
+	
+}
+function library_hours_test_function(){
+
+	  return theme('library_hours_test_template');
+	
+}
+function library_hours_submit_create_function(){
+
+	  submit_form_create();
+	
+}
+function library_hours_clone_function(){
+
+	do_clone();
+	
+}
+function library_hours_submit_edit_function(){
+
+	  submit_form_edit();
+	
+}
+function library_hours_display_form_data_function(){
+
+	  display_form_data();
+	
+}
+function library_hours_delete_function(){
+
+	  delete_hours();
+	
+}
+function library_hours_submit_create_special_hours_function(){
+
+	  submit_create_special_hours();
+	
+}
+function library_hours_filter_function(){
+
+	  filter();
+	
+}
+function library_hours_open_results_function(){
+
+	  get_full_hours();
+	
+}
+
+/**
+ * Implements hook_theme()
+ */
+function library_hours_theme(){
+  return array(
+    'library_hours_template' => array(
+      // template file name will be library-hours-page.tpl.php
+      'template' => 'library_hours-page',
+    ),
+    'library_hours_open_template' => array(
+      // template file name will be library-hours-page.tpl.php
+      'template' => 'library_hours_open-page',
+    ),
+	  'library_hours_create_template' => array(
+      // template file name will be library-hours_create-page.tpl.php
+	  'template' => 'library_hours_create-page',
+    ),
+	  'library_hours_edit_template' => array(
+      // template file name will be library-hours_edit-page.tpl.php
+	  'template' => 'library_hours_edit-page',
+    ),
+	  'library_hours_view_template' => array(
+      // template file name will be library-hours_view-page.tpl.php
+	  'template' => 'library_hours_view-page',
+    ),
+	  'library_hours_list_template' => array(
+      // template file name will be library-hours_view-page.tpl.php
+	  'template' => 'library_hours_list-page',
+    ),
+	  'library_hours_confirm_delete_template' => array(
+      // template file name will be library-hours_view-page.tpl.php
+	  'template' => 'library_hours_confirm_delete-page',
+    ),
+	  'library_hours_test_template' => array(
+      // template file name will be library-hours_view-page.tpl.php
+	  'template' => 'library_hours_test-page',
+    ),
+  );
+}
+
+function submit_form_edit(){
+$nid = $_POST['nid'];
+$error = validate();
+
+
+
+	
+		if ($_POST['hours_date_start']<>"") {
+		$datearray = explode("/",$_POST['hours_date_start']);
+		$date_month = $datearray[0];
+		$date_day = $datearray[1];
+		$date_year = $datearray[2];
+		$date_start = $date_year."-".$date_month."-".$date_day." 00:00:00";
+		}
+	
+		if ($_POST['hours_date_end']<>"") {
+		$datearray = explode("/",$_POST['hours_date_end']);
+		$date_month = $datearray[0];
+		$date_day = $datearray[1];
+		$date_year = $datearray[2];
+		$date_end = $date_year."-".$date_month."-".$date_day." 00:00:00";
+		}
+	
+  $hours = node_load($nid);
+  $hours->title = $_POST['hours_title'];
+  $hours->language = LANGUAGE_NONE; // Or e.g. 'en' if locale is enabled
+  $hours->body[$hours->language][0]['value'] = $_POST['body'];
+	
+  $hours->field_section[$hours->language][0]['value'] = $_POST['hours_section'];
+  $order = get_section_order($_POST['hours_section']);
+  $hours->field_order[$hours->language][0]['value'] = $order;  
+  $hours->field_special_hours[$hours->language][0]['value'] = $_POST['special_hours'];
+  $hours->field_default[$hours->language][0]['value'] = $_POST['hours_default'];
+  $hours->field_contact_info[$hours->language][0]['value'] = $_POST['contact_info'];
+  $hours->field_period_dates[$hours->language][0]['value'] = $date_start;
+  $hours->field_period_dates[$hours->language][0]['value2'] = $date_end;
+
+  $hours->field_exception_hours[$hours->language][0]['value'] = json_encode($_POST['exception_hours']);
+  $hours->field_hours[$hours->language][0]['value'] = json_encode($_POST['hours']);
+
+
+	//now perform the save
+if ($error<>""){
+	$error = '&error='.$error;
+}
+	
+	try {
+		
+		  node_save($hours); //save node
+		  $success = TRUE;
+		  	header('Location: /library-hours/edit?nid='.$hours->nid."&msg=You have edited ".$_POST['hours_title'].''.$error);
+			exit;
+	}
+
+	catch (Exception $e) {
+	  // Do your error handling here.
+	header('Location: /library-hours/edit?nid='.$nid.'&error='.$e);
+	exit;	
+	}
+}
+
+function do_clone(){
+  global $user;
+  $nid = $_GET['nid'];
+  $node = node_load($nid);
+  $new_node = $node;
+  $new_node->uid = $user->uid;
+
+  $new_node->title = "Clone of ".$new_node->title;
+  $new_node->field_default['und'][0]['value'] = "0";
+  
+  unset($new_node->nid);
+  unset($new_node->vid);
+
+  node_save($new_node);
+	
+  $path='library-hours/edit';
+  $options = array(
+      'absolute' => TRUE,
+      'query' => array('nid' => $new_node->nid,'clone' => 'Yes')
+    );
+  $url = url($path, $options);
+
+  drupal_goto($url);
+}
+
+function submit_form_create($clone){
+global $user;
+	
+$error = validate();
+
+	//print_r($_POST); exit;
+	
+	
+	if ($clone=="yes"){
+		$_POST['hours_title']="Clone of ".$_POST['hours_title'];
+	}
+	
+	if ($_POST['hours_date_start']<>"") {
+	$datearray = explode("/",$_POST['hours_date_start']);
+	$date_month = $datearray[0];
+	$date_day = $datearray[1];
+	$date_year = $datearray[2];
+	$date_start = $date_year."-".$date_month."-".$date_day." 00:00:00";
+	}
+
+	if ($_POST['hours_date_end']<>"") {
+	$datearray = explode("/",$_POST['hours_date_end']);
+	$date_month = $datearray[0];
+	$date_day = $datearray[1];
+	$date_year = $datearray[2];
+	$date_end = $date_year."-".$date_month."-".$date_day." 00:00:00";
+	}	
+	
+  $hours = new stdClass();
+  $hours->title = $_POST['hours_title'];
+  $hours->type = "library_hours";
+  node_object_prepare($hours); // Sets some defaults. Invokes hook_prepare() and hook_node_prepare().
+  $hours->language = LANGUAGE_NONE; // Or e.g. 'en' if locale is enabled
+  $hours->body[$hours->language][0]['format'] = 'full_html';
+  $hours->body[$hours->language][0]['value'] = $_POST['body'];
+  $hours->uid = $user->uid; 
+  $hours->status = 1; //(1 or 0): published or not
+  $hours->promote = 0; //(1 or 0): promoted to front page
+  $hours->comment = 0; // 0 = comments disabled, 1 = read only, 2 = read/write
+
+  $hours->field_section[$hours->language][0]['value'] = $_POST['hours_section'];
+  $order = get_section_order($_POST['hours_section']);
+  $hours->field_order[$hours->language][0]['value'] = $order;  
+  $hours->field_special_hours[$hours->language][0]['value'] = $_POST['special_hours'];
+  $hours->field_default[$hours->language][0]['value'] = $_POST['hours_default'];
+  $hours->field_contact_info[$hours->language][0]['value'] = $_POST['contact_info'];
+  $hours->field_period_dates[$hours->language][0]['value'] = $date_start;
+  $hours->field_period_dates[$hours->language][0]['value2'] = $date_end;
+	
+  $hours->field_exception_hours[$hours->language][0]['value'] = json_encode($_POST['exception_hours']);
+
+  $hours->field_hours[$hours->language][0]['value'] = json_encode($_POST['hours']);
+
+	//now perform the save
+if ($error<>""){
+	$error = '&error='.$error;
+}
+	
+	try {
+		
+		  node_save($hours); //save node
+		  $success = TRUE;
+		  	header('Location: /library-hours/edit?nid='.$hours->nid."&msg=You have created ".$_POST['hours_title'].''.$error);
+			exit;
+	}
+
+	catch (Exception $e) {
+	  // Do your error handling here.
+	header('Location: /library-hours/edit?nid='.$hours->nid.'&error='.$e);
+	exit;	
+	}
+	
+
+	
+	
+}
+
+
+function library_hours_block(){ ?>
+
+      
+<?php }
+
+function library_hours_page(){ 
+	
+$page = arg(1);
+	
+switch($page){
+		
+	default:
+	library_hours();
+	break;
+		
+	case 'closures';
+	library_closures();
+	break;
+		
+	case 'eckles';
+	library_hours_eckles();
+	break;
+		
+	case 'virginia';
+	library_hours_virginia();
+	break;
+		
+		
+}
+
+}
+
+function library_hours() { ?>
+
+
+  
+  <?php }
+
+function library_closures(){ ?>
+
+
+<?php }
+
+function library_hours_eckles(){ ?>
+
+
+<?php }
+
+function library_hours_visitors() { ?>
+<?php }
+
+function library_hours_virginia(){ ?>
+
+
+<?php }
+
+
+///////////////////////////////////////////////////////////////////////////////////
+
+function get_special_hours($special_hours){?>
+   <option id="special_hours" name="special_hours" value="No" <?php if ($special_hours==="No") {echo " selected "; } ?>>No</option>
+   <option id="special_hours" name="special_hours" value="Yes" <?php if ($special_hours==="Yes") {echo " selected "; } ?>>Yes</option>
+ <?php 
+}
+
+
+function get_is_default($default){?>
+   <option id="default_no" name="default_no" value ="0" <?php if ($default=="0") {echo "selected"; } ?>>No</option>
+   <option id="default_yes" name="default_yes" value ="1" <?php if ($default=="1") {echo "selected"; } ?>>Yes</option>
+ <?php 
+}
+
+function get_sections($section){
+	
+	$arrsection = explode("|",$section);
+	$sectionKey = $arrsection[0];
+	$sectionValue = $arrsection[1];
+	
+	$sections[0] = "field_section";
+	$sections = field_info_field($sections[0]);
+	echo '<option></option>';
+	foreach($sections[settings][allowed_values] as $key => $value){ ?>
+	<option value="<?php echo $key; ?>" <?php if ($key==$sectionKey) echo ' selected '; ?> >
+	<?php echo $value; ?>
+	</option>
+	<?php }
+}
+
+function get_section_order($section){
+	
+	$arrsection = explode("|",$section);
+	$section_Key = $arrsection[0];
+	$section_Value = $arrsection[1];
+	
+	$section_order[0] = "field_section_order";
+	$section_order = field_info_field($section_order[0]);
+	foreach($section_order[settings][allowed_values] as $key => $value){
+		if ($section_Key==$value){ $order = $key; }
+	}
+	
+	return $order;
+ }
+
+
+function get_hours_types($hours_type){
+	
+	$hours_types[0] = "field_hours_types";
+	$hours_types = field_info_field($hours_types[0]);
+	echo '<option></option>';
+	foreach($hours_types[settings][allowed_values] as $key => $value){
+		echo '<option value="'.$key.'"';
+		if ($key==$hours_type){ echo " selected "; }
+		echo '>'.$value.'</option>'.$hours_type;
+	}
+}
+
+function get_library_hours_special($nid){ 
+
+$node=get_node($nid);
+
+$exception_hours = objectToArray(json_decode($node['field_exception_hours']['und'][0]['value']));
+?>
+<?php $count = (count($exception_hours[1])-1);?>
+<div class="input_fields_wrap2">
+<?php	for ($x = 0; $x <= $count; $x++) { ?>
+<div class="datepair">
+<input type="text" name="exception_hours[1][]" class="datepicker" placeholder="Date" value="<?php echo $exception_hours[1][$x]; ?>" /> <input type="text" class="timepicker" name="exception_hours[2][]" placeholder="Hours Start" value="<?php echo $exception_hours[2][$x]; ?>" /> to <input type="text" class="timepicker" name="exception_hours[3][]" placeholder="Hours End" value="<?php echo $exception_hours[3][$x]; ?>" /><select name="exception_hours[4][]"><option value="open" <?php if ($exception_hours[4][$x]=="open") echo 'selected'; ?> >Open</option><option value="closed" <?php if ($exception_hours[4][$x]=="closed") echo 'selected'; ?> >Closed</option><option value="appointment" <?php if ($exception_hours[4][$x]=="appointment") echo 'selected'; ?> >By Appointment Only</option></select><input type="text" name="exception_hours[5][]" placeholder="Public Comments" value="<?php echo $exception_hours[5][$x]; ?>" /><a href="#" class="remove_field2">Remove</a></div>
+<?php } ?> 
+</div>
+<div class="input_fields_wrap"><button class="add_field_button">Add Fields</button><div></div></div> 
+<?php }
+
+function get_library_hours($nid){
+
+if ($nid<>""){
+$node = get_node($nid);
+	
+$hours = objectToArray(json_decode($node['field_hours']['und'][0]['value']));
+	
+} else {
+	$hours_to_select=12;
+
+}
+?>
+<div id="library_hours">
+
+<div id="div_monday">
+<label id="label_monday" name="label_monday">Monday</label>
+<span id="span_monday1">
+<input id="hours[1][1][1][1]" name="hours[1][1][1][1]" type="text" class="timepicker" value="<?php echo $hours[1][1][1][1]; ?>">to<input  id="hours[1][1][1][2]"  name="hours[1][1][1][2]" type="text" class="timepicker" value="<?php echo $hours[1][1][1][2];?>"><select id="hours[1][1][2][1]" name="hours[1][1][2][1]" ><?php echo get_hours_types($hours[1][1][2][1]);?></select>
+</span>
+<BR>
+<span id="span_monday2">
+<input name="hours[1][2][1][1]"  type="text" class="timepicker" value="<?php echo $hours[1][2][1][1];?>">to<input name="hours[1][2][1][2]" type="text" class="timepicker" value="<?php echo $hours[1][2][1][2];?>"><select name="hours[1][2][2][2]" ><?php echo get_hours_types($hours[1][2][2][2]);?></select>
+</span>
+</div>
+
+<div id="div_tuesday">
+<label id="label_tuesday" name="label_tuesday">Tuesday</label>
+<span id="span_tuesday1">
+<input name="hours[2][1][1][1]"  id="hours[2][1][1][1]" type="text" class="timepicker" value="<?php echo $hours[2][1][1][1];?>">to<input id="hours[2][1][1][2]"  name="hours[2][1][1][2]" type="text" class="timepicker" value="<?php echo $hours[2][1][1][2];?>"><select id="hours[2][1][2][1]"  name="hours[2][1][2][1]" ><?php echo get_hours_types($hours[2][1][2][1]);?></select>
+</span>
+<BR>
+<span name="span_tuesday2">
+<input name="hours[2][2][1][1]" type="text" class="timepicker" value="<?php echo $hours[2][2][1][1];?>">to<input name="hours[2][2][1][2]" type="text" class="timepicker" value="<?php echo $hours[2][2][1][2];?>"><select name="hours[2][2][2][2]" ><?php echo get_hours_types($hours[2][2][2][2]);?></select>
+</span>
+</div>
+
+<div name="div_wednesday">
+<label name="label_wednesday1">Wednesday</label>
+<span name="span_wednesday1">
+<input name="hours[3][1][1][1]"  id="hours[3][1][1][1]" type="text" class="timepicker" value="<?php echo $hours[3][1][1][1];?>">to<input name="hours[3][1][1][2]" id="hours[3][1][1][2]" type="text" class="timepicker" value="<?php echo $hours[3][1][1][2];?>"><select id="hours[3][1][2][1]" name="hours[3][1][2][1]" ><?php echo get_hours_types($hours[3][1][2][1]);?></select>
+</span>
+<BR>
+<span name="span_wednesday2">
+<input name="hours[3][2][1][1]" type="text" class="timepicker" value="<?php echo $hours[3][2][1][1];?>">to<input name="hours[3][2][1][2]" type="text" class="timepicker" value="<?php echo $hours[3][2][1][2];?>"><select name="hours[3][2][2][2]" ><?php echo get_hours_types($hours[3][2][2][2]);?></select>
+</span>
+</div>
+
+<div name="div_thursday">
+<label name="label_thursday">Thursday</label>
+<span name="span_thursday1">
+<input name="hours[4][1][1][1]"  id="hours[4][1][1][1]" type="text" class="timepicker" value="<?php echo $hours[4][1][1][1];?>">to<input name="hours[4][1][1][2]"  id="hours[4][1][1][2]" type="text" class="timepicker" value="<?php echo $hours[4][1][1][2];?>"><select id="hours[4][1][2][1]" name="hours[4][1][2][1]" ><?php echo get_hours_types($hours[4][1][2][1]);?></select>
+</span>
+<BR>
+<span name="span_thursday2">
+<input name="hours[4][2][1][1]" type="text" class="timepicker" value="<?php echo $hours[4][2][1][1];?>">to<input name="hours[4][2][1][2]" type="text" class="timepicker" value="<?php echo $hours[4][2][1][2];?>"><select name="hours[4][2][2][2]" ><?php echo get_hours_types($hours[4][2][2][2]);?></select>
+</span>
+</div>
+
+<div name="div_friday">
+<label name="label_friday">Friday</label>
+<span name="span_friday1">
+<input name="hours[5][1][1][1]"  id="hours[5][1][1][1]" type="text" class="timepicker" value="<?php echo $hours[5][1][1][1];?>">to<input name="hours[5][1][1][2]" id="hours[5][1][1][2]" type="text" class="timepicker" value="<?php echo $hours[5][1][1][2];?>"><select id="hours[5][1][2][1]" name="hours[5][1][2][1]" ><?php echo get_hours_types($hours[5][1][2][1]);?></select>
+</span>
+<BR>
+<span name="span_friday2">
+<input name="hours[5][2][1][1]" type="text" class="timepicker" value="<?php echo $hours[5][2][1][1];?>">to<input name="hours[5][2][1][2]" type="text" class="timepicker" value="<?php echo $hours[5][2][1][2];?>"><select name="hours[5][2][2][2]" ><?php echo get_hours_types($hours[5][2][2][2]);?></select>
+</span>
+</div>
+
+<div name="div_saturday">
+<label name="label_saturday">Saturday</label>
+<span name="span_saturday1">
+<input id="hours[6][1][1][1]" name="hours[6][1][1][1]" type="text" class="timepicker" value="<?php echo $hours[6][1][1][1];?>">to<input id="hours[6][1][1][2]"  name="hours[6][1][1][2]" type="text" class="timepicker" value="<?php echo $hours[6][1][1][2];?>"><select id="hours[6][1][2][1]"  name="hours[6][1][2][1]" ><?php echo get_hours_types($hours[6][1][2][1]);?></select>
+</span>
+<BR>
+<span name="span_saturday2">
+<input name="hours[6][2][1][1]" type="text" class="timepicker" value="<?php echo $hours[6][2][1][1];?>">to<input name="hours[6][2][1][2]" type="text" class="timepicker" value="<?php echo $hours[6][2][1][2];?>"><select name="hours[6][2][2][2]" ><?php echo get_hours_types($hours[6][2][2][2]);?></select>
+</span>
+</div>
+
+<div name="div_sunday">
+<label name="label_sunday">Sunday</label>
+<span name="span_sunday1">
+<input id="hours[7][1][1][1]"  name="hours[7][1][1][1]" type="text" class="timepicker" value="<?php echo $hours[7][1][1][1];?>">to<input name="hours[7][1][1][2]"  id="hours[7][1][1][2]" type="text" class="timepicker" value="<?php echo $hours[7][1][1][2];?>"><select id="hours[7][1][2][1]"  name="hours[7][1][2][1]" ><?php echo get_hours_types($hours[7][1][2][1]);?></select>
+</span>
+<BR>
+<span name="span_sunday2">
+<input name="hours[7][2][1][1]" type="text" class="timepicker" value="<?php echo $hours[7][2][1][1];?>">to<input name="hours[7][2][1][2]" type="text" class="timepicker" value="<?php echo $hours[7][2][1][2];?>"><select name="hours[7][2][2][2]" ><?php echo get_hours_types($hours[7][2][2][2]);?></select>
+</span>
+</div>
+
+</div>
+<?php }
+
+
+///////////////////////
+function objectToArray($d) 
+{
+    if (is_object($d)) {
+        // Gets the properties of the given object
+        // with get_object_vars function
+        $d = get_object_vars($d);
+    }
+
+    if (is_array($d)) {
+        /*
+        * Return array converted to object
+        * Using __FUNCTION__ (Magic constant)
+        * for recursive call
+        */
+        return array_map(__FUNCTION__, $d);
+    } else {
+        // Return array
+        return $d;
+    }
+}
+
+function get_node($nid){
+	$node = node_load($nid);
+	$node = objectToArray($node);
+	return $node;
+}
+
+function get_field_json($field){
+	$field = json_decode($field);
+	$field = objectToArray($field);
+	return $field;
+}
+
+function get_hours_form($nid){ 
+	if ($nid<>""){
+	$node = get_node($nid);
+	$section_order = $node['field_section_order']['und'][0]['value'];
+	$formaction = "/library-hours/submit_edit";
+    $body = $node['body']['und'][0]['value'];
+	$template = "0";
+	if ($template == "1") {
+		$readonly = true;
+	}
+	$action="edit";
+	} else {
+	$action="create";
+	$section_order="none";
+	$formaction = "/library-hours/submit_create";
+	}
+	
+	$cloned = $_GET['clone'];
+	$exception = $node['field_special_hours']['und'][0]['value'];
+
+	
+	if ($node['field_period_dates']['und'][0]['value']<>"") {
+	$date_start = substr($node['field_period_dates']['und'][0]['value'], 0, 10);
+	$datearray = explode("-",$date_start);
+	$date_year = $datearray[0];
+	$date_month = $datearray[1];
+	$date_day = $datearray[2];
+	$date_start = $date_month."/".$date_day."/".$date_year;
+	}
+
+	if ($node['field_period_dates']['und'][0]['value2']<>"") {
+	$date_end = substr($node['field_period_dates']['und'][0]['value2'], 0, 10);
+	$datearray = explode("-",$date_end);
+	$date_year = $datearray[0];
+	$date_month = $datearray[1];
+	$date_day = $datearray[2];
+	$date_end = $date_month."/".$date_day."/".$date_year;
+	}
+	
+
+?>
+
+<?php if ($cloned=="Yes"){ ?>
+	<div id="div_show_clone_confirmation" class="messages status">You have just created a clone!</div>
+<?php } ?>
+
+<div id="top" class="box">
+	<form id="hoursform" name="hoursform" onclick="return false" method="post" action="<?php echo $formaction; ?>" >
+	<!--<form id="hoursform" name="hoursform" method="post" action="/library-hours/display_form_data" >-->
+		
+		<div id="div_title" name="div_title"><label for="title">Title</label>
+		<div class="description">Please enter something descriptive for finding it again and not confusing it with other hours. Bad: "Spring Break". Good: "Eckles 2017 Spring Break".</div>
+		<input type="text" id="hours_title" name="hours_title" value="<?php echo $node['title']; ?>" size="40">
+		</div>
+		
+		<div id="div_sections" name="div_sections" class="div-margin">
+		<label for="section">Section</label>
+		<div class="description">Choose the section for this set of hours.</div>
+     	<select name="hours_section"  id="hours_section">
+		<?php echo get_sections($node['field_section']['und'][0]['value']); ?>
+		</select>
+		</div>
+		
+		<div id="div_hours_dates" name="div_library_hours_dates" class="div-margin">
+		<label for="hours_dates">Dates</label>
+		<div class="description">These dates are the beginning and end of the period being entered. The system uses these dates to get the dates for displaying the hours. It is very important to get these dates correct. Only one set of non-exception hours per time range can be entered.</div>
+		<input type="text" id="hours_date_start" name="hours_date_start" class="datepicker" value="<?php echo $date_start;?>" placeholder="Date Start">
+		<input type="text" id="hours_date_end" name="hours_date_end" class="datepicker" value="<?php echo $date_end;?>" placeholder="Date End">
+		</div>
+						
+		<div id="div_special_hours" name="div_special_hours" class="div-margin">
+		<label for="special_hours">Exception?</label>
+		<div class="description">For regular hours, i.e Fall, Spring, or Summer Semesters, choose "No". For hours that will override regular hours, such as Spring Break, Christmas, or other days that the section will be closed, choose "Yes". After choosing Yes or No, you will then be able to enter regular or special hours.</div>
+		<select name="special_hours" id="special_hours">
+		<option></option>
+		<?php echo get_special_hours($node['field_special_hours']['und'][0]['value']); ?>
+		</select>
+		</div>
+		
+		<div id="div_library_hours" name="div_library_hours" class="div-margin div_library_hours">
+		<label for="library_hours">Regular Hours</label>
+		<div class="description">You need to enter hours for Open and Appointment hours only. You do NOT enter hours for days that will be closed. If you choose Closed for a Regular Hours day of the week, that entire day will show as closed.</div>
+		<?php echo get_library_hours($nid); ?>
+		</div>
+		
+		<div id="div_library_hours_special" name="div_library_hours_special" class="div-margin div_library_hours_special">
+		<label for="library_hours_special">Special Hours</label>
+		<div class="description">You need to enter hours for Open and Appointment hours only. You do NOT enter hours for days that will be closed, you only choose closed in the dropdown. If you choose closed for Special Hours then that day will show as closed. If you enter CLOSED and a comment then that comment will be displayed instead of the hours for that day. </div>
+		<?php echo get_library_hours_special($nid); ?>
+		</div>
+		
+		<div id="div_body" name="div_body" class="div-margin">
+		<label for="body">Comments</label>
+		<div class="description">Optional. These are public comments that will be displayed next to the hours listing for all applicable days. Bad: "Fix these up later". Good: "Closed due to snow".</div>
+		<input type="text" id="body" name="body" value="<?php echo $body; ?>" size="40">
+		</div>
+		
+		<span>
+		<div id="div_submit" class="div-margin">
+		<input type="button" id="submit_hours_form" value="Submit Hours">
+		<!--<input type="submit" id="submit_hours_form" value="Submit Hours">-->
+		</div>
+
+	<input type="hidden" id="hours_default" name="hours_default" value="0">
+	<input type="hidden" id="nid" name="nid" value="<?php echo $nid; ?>">	
+	</form>
+</div>
+
+
+<?php } 
+
+function display_form_data(){
+	print_r($_POST);
+}
+
+
+function get_library_hours_tabs($nid){ 
+$args = arg();
+?>
+	<div id="hours_tabs">
+		<ul class="tabs primary">
+			<li <?php if ($args[1]=="") echo " class='active'";?>>
+				<a href="/library-hours" <?php if ($args[1]=="") echo " class='active'";?>>Library Hours</a>
+			</li>
+			<li <?php if ($_GET['show'] == 'non_default'){ echo ' class="active"'; } ?>>
+				<a href="/library-hours/list?show=non_default"  <?php if ($_GET['show'] == 'non_default'){ echo ' class="active"'; } ?>>All Hours Listing</a>
+			</li>
+			<li <?php if ($_GET['show'] == 'open'){ echo ' class="active"'; } ?>>
+				<a href="/library-hours/open?show=open"  <?php if ($_GET['show'] == 'open'){ echo ' class="active"'; } ?>>Open Hours Listing</a>
+			</li>
+			<li <?php if (strpos($_SERVER['REQUEST_URI'],'create')){ echo ' class="active"'; } ?>>
+				<a href="/library-hours/create" <?php if (strpos($_SERVER['REQUEST_URI'],'create')){ echo ' class="active"'; } ?>>Create</a>
+			</li>
+		</ul>
+		<?php if ($nid<>""){ ?> 
+			<ul class="tabs secondary" id="hours_listing_tabs">
+				<li <?php if (strpos($_SERVER['REQUEST_URI'],'view')){ echo ' class="active"'; } ?>>
+					<a href="/library-hours/view?nid=<?php echo $nid; ?>" <?php if (strpos($_SERVER['REQUEST_URI'],'view')){ echo ' class="active"'; } ?>>View</a>
+				</li>
+				<li <?php if (strpos($_SERVER['REQUEST_URI'],'edit')){ echo ' class="active"'; } ?>>
+					<a href="/library-hours/edit?nid=<?php echo $nid; ?>" <?php if (strpos($_SERVER['REQUEST_URI'],'edit')){ echo ' class="active"'; } ?>>Edit</a>
+				</li>
+				<li><a href="/library-hours/submit_clone?nid=<?php echo $nid; ?>">Clone</a></li>
+				<li <?php if (strpos($_SERVER['REQUEST_URI'],'confirm_delete')){ echo ' class="active"'; } ?>>
+					<a href="/library-hours/confirm_delete?nid=<?php echo $nid; ?>" <?php if (strpos($_SERVER['REQUEST_URI'],'confirm_delete')){ echo ' class="active"'; } ?>>Delete</a>
+				</li>
+			</ul>
+		<?php } ?>
+
+	</div>
+	
+<?php } 
+
+function filter(){
+		$conn = conn();
+	
+	//print_r($_POST); exit;
+
+		$title = $_POST['hours_by_title'];	
+		$date_only = $_POST['hours_by_date_only'];	
+	
+		$default = $_POST['hours_by_default'];
+	
+        $section = $_POST['hours_by_section'];
+		$arrsection = explode("|",$section);
+		$section = $arrsection[0];
+	
+
+		$date_start = $_POST['hours_by_date_start'];
+		$date_end = $_POST['hours_by_date_end'];
+	
+		if ($date_start<>"") {
+		$datearray = explode("/",$date_start);
+		$date_month = $datearray[0];
+		$date_day = $datearray[1];
+		$date_year = $datearray[2];
+		$date_start = $date_year."-".$date_month."-".$date_day." 00:00:00";;
+		}
+	
+		if ($date_end<>"") {
+		$datearray = explode("/",$date_end);
+		$date_month = $datearray[0];
+		$date_day = $datearray[1];
+		$date_year = $datearray[2];
+		$date_end = $date_year."-".$date_month."-".$date_day." 00:00:00";;
+		}
+	
+		$sql ="SELECT DISTINCT(e.nid) FROM node e";
+
+	    if ($default<>"") { 
+			$sql.=", field_data_field_default t"; 
+		}
+	    if ($section<>"") { 
+			$sql.=", field_data_field_section s"; 
+		}
+		
+	    if ( ($date_start<>"") ){ 
+			$sql.=", field_data_field_period_dates d"; 
+		}
+	
+	    $sql.=" WHERE e.nid = t.entity_id";
+		
+		if ($section<>"") { 
+			$sql.=" AND e.nid = s.entity_id"; 
+		}
+	    
+		if ( ($date_start<>"") ){ 			
+			$sql.=" AND e.nid = d.entity_id"; 		}
+	
+		if ($title<>"") { 
+			$sql.=" AND e.title LIKE '%".$title."%'"; 
+		}
+	
+		if ($default<>"") { 
+			$sql.=" AND t.field_default_value='".$default."'"; 
+						  }
+
+		if ($section<>"") { 
+			$sql.=" AND s.field_section_value='".$section."'"; 
+		}
+	
+		if ( ($date_start<>"")  ){ 			
+			$sql.=" AND ( ('".$date_start."' BETWEEN d.field_period_dates_value AND d.field_period_dates_value2)"; 
+			$sql.=" OR  ('".$date_end."' BETWEEN d.field_period_dates_value AND d.field_period_dates_value2) "; 
+			$sql.=")"; 
+		}	
+	    
+		//echo $sql; //exit;
+
+		$result = $conn->query($sql);
+
+		while (($row = $result->fetch_assoc()) !== NULL){			
+			$nids[] = $row['nid'];
+		}
+
+	
+	
+	
+			
+
+	$nodes = array_unique($nids);
+	echo '<div id="div_hours_results"><h2>Results</h2></div>';
+
+	foreach ($nodes as $nid){
+		$node = get_node($nid);
+		$start = date("m-d-Y", strtotime($node['field_period_dates']['und'][0]['value']));
+		$end = date("m-d-Y", strtotime($node['field_period_dates']['und'][0]['value2']));
+
+		echo '<a href="/library-hours/view?nid='.$nid.'">'.$node['title'].'</a> '.$start." to ".$end;
+		echo "<BR>";
+	}
+}
+
+function get_defaults(){
+		$conn = conn();
+
+		$sql.="SELECT DISTINCT(e.nid) FROM node e, field_data_field_default d ";
+		$sql.="WHERE e.nid = d.entity_id ";
+		$sql.="AND d.field_default_value='1' ";
+		$sql.="ORDER BY e.created DESC ";
+
+		$result = $conn->query($sql);
+
+		while (($row = $result->fetch_assoc()) !== NULL){			
+			$nids[] = $row['nid'];
+		}
+	
+	echo '<div id="default_hours"><h2>Templates</h2></div>';
+
+	foreach ($nids as $nid){
+		$node = get_node($nid);
+		//$section = explode("|",$node['field_section']['und'][0]['value']);
+		//$section = $section[1];
+
+		echo '<a href="/library-hours/view?nid='.$nid.'">'.$node['title'].'</a>';
+		echo "<BR>";
+	}
+}
+	
+function delete_hours(){
+   $nid = $_GET['nid_to_delete'];
+
+	$nodearray = array();
+	
+	$nodearray[]=$nid;
+	
+	$node = get_node($nid);
+	
+	$title = $node['title'];
+	$default = $node['field_default']['und'][0]['value'];
+	try {
+		node_delete($nodearray);
+		
+		$path='library-hours/list';
+
+		if ($default=="1"){
+		$options = array(
+		'absolute' => TRUE,
+		'query' => array('show' => 'default','node_deleted' => 'Yes','title' => $title)
+		);
+		}
+		
+		if ($default=="0"){
+		$options = array(
+		'absolute' => TRUE,
+		'query' => array('show' => 'non_default','node_deleted' => 'Yes','title' => $title)
+		);
+
+		}
+		
+		$url = url($path, $options);
+		drupal_goto($url);
+	}
+	
+	catch (Exception $e) {
+	echo $e;		
+	}
+	
+}
+
+
+function get_today($datetoshow,$section,$full){
+		$conn = conn();
+		$datetoshow = $datetoshow." 00:00:00";
+		$sql ="SELECT DISTINCT(e.nid) FROM node e, field_data_field_period_dates d, field_data_field_default t, field_data_field_special_hours x, field_data_field_section s ";
+	    $sql.="WHERE e.nid = d.entity_id ";		
+		$sql.="AND e.nid = t.entity_id ";
+		$sql.="AND e.nid = s.entity_id ";
+		$sql.="AND e.nid = x.entity_id ";
+    	$sql.=" AND ( '".$datetoshow."' BETWEEN d.field_period_dates_value AND d.field_period_dates_value2 ) ";     	
+	    $sql.="AND t.field_default_value='0' ";
+	    $sql.="AND x.field_special_hours_value='Yes' ";
+		$sql.="AND s.field_section_value = '".$section."' ";
+
+		$result = $conn->query($sql);
+		$array = array();
+
+		while (($row = $result->fetch_assoc()) !== NULL){			
+			$nid = $row['nid'];
+		}
+	$exception="Yes";
+	
+	if ($nid==""){
+		
+		$sql ="SELECT DISTINCT(e.nid) FROM node e, field_data_field_period_dates d, field_data_field_default t, field_data_field_special_hours x, field_data_field_section s ";
+	    $sql.="WHERE e.nid = d.entity_id ";		
+		$sql.="AND e.nid = t.entity_id ";
+		$sql.="AND e.nid = s.entity_id ";
+		$sql.="AND e.nid = x.entity_id ";
+    	$sql.=" AND ( '".$datetoshow."' BETWEEN d.field_period_dates_value AND d.field_period_dates_value2 ) ";     	
+	    $sql.="AND t.field_default_value='0' ";
+	    $sql.="AND x.field_special_hours_value='No' ";
+		$sql.="AND s.field_section_value = '".$section."' ";
+
+		$result = $conn->query($sql);
+		$array = array();
+
+		while (($row = $result->fetch_assoc()) !== NULL){			
+			$nid = $row['nid'];
+		}	
+			$exception="No";
+
+	}
+	
+
+$dow = date("N", strtotime($datetoshow));	
+$node=get_node($nid);
+	
+//print_r($exception); exit;
+	
+if ($exception=="No"){
+	$hours = get_field_json($node['field_hours']['und'][0]['value']);
+	$open = $hours[$dow][1][1][1];
+	$closed = $hours[$dow][1][1][2];
+	$ht = $hours[$dow][1][2][1];
+	$comments = $node['field_section_comments']['und'][0]['value'];
+	
+	$open2 = $hours[$dow][2][1][1];
+	$closed2 = $hours[$dow][2][1][2];
+	$ht2 = $hours[$dow][2][2][2];
+	
+	if ($ht2=="appointment"){
+		$ht2="<BR>By Appointment Only";
+	}
+
+	if ( ($open<>"") && ($closed<>"") ) {
+		$today = $open." to ".$closed;
+		if ($ht=="appointment")  {
+			$ht = "By Appointment Only";
+			$today .= "<BR>".$ht;
+		}
+		if ( ($open2<>"") && ($closed2<>"") ) {
+			$today .= "<HR>".$open2." to ".$closed2." ".$ht2;
+		}
+	}
+
+	if ( ($full=="yes") && ($open=="12:00am") ) {
+		$today = "Open Until ".$closed;
+	}
+
+	if ( ($open=="12:00am") && ($closed=="12:00am") ) {
+		$today = "24 hours";
+	}
+
+	if ($ht=="closed") {
+		$today="Closed";
+	}
+
+	if ( ($comments<>"") && ($full=="yes")  ) {
+		$today = $comments;
+	}
+
+}
+	
+if ($exception=="Yes"){
+$hours = get_field_json($node['field_exception_hours']['und'][0]['value']);
+$x=0;
+	foreach($hours[1] as $date){
+	$datearray = explode("/",$date);
+	$date_year = $datearray[2];
+	$date_month = $datearray[0];
+	$date_day = $datearray[1];
+	$comments = $hours[5][$x];
+	$date_unix = strtotime($date_year."-".$date_month."-".$date_day);
+	$datetoshow_unix = substr($datetoshow, 0, 10);
+	$datetoshow_unix = strtotime($datetoshow_unix);
+
+		if ($date_unix==$datetoshow_unix){
+			
+				if ( ($hours[2][$x]<>"") && ($hours[3][$x]<>"") ) {
+				$today = $hours[2][$x]." to ".$hours[3][$x];
+				}
+
+				if ( ($hours[2][$x]=="12:00am") && ($hours[3][$x]=="12:00am") && ($full=="no") ) {
+					$today = "24 hours";
+				}
+				
+			
+			
+			if (($hours[4][$x]=='closed')){
+				$today = "Closed";
+			}
+			
+			if ( ($full=="no") && ($hours[2][$x]=="12:00am") ) {
+				$today = "Open Until ".$hours[3][$x];
+			}
+			
+			if ($full=="yes") {
+				$today = $hours[2][$x]." to ".$hours[3][$x];
+				if ($hours[4][$x]=="appointment")  {
+					$ht = "By Appointment Only";
+					$today = $today."<BR>".$ht;
+				}
+				if ($hours[4][$x]=="closed") {
+				$today = "Closed";
+				}
+			}
+			
+			if ( ($comments<>"") && ($full=="yes") ) {$today = $comments;	}	
+
+		}
+
+	$x++;	
+	}
+}
+	
+return $today;	
+}
+
+function get_weekly_hours($date,$section,$full){
+//$date = substr($date, 0, 10);
+
+$parts = explode('-', $date);
+
+$today = date("l");
+
+$todayPlusOne = date(
+    "l", 
+    mktime(0, 0, 0, $parts[1], $parts[2] + 1, $parts[0])
+    //              ^ Month    ^ Day + 5      ^ Year
+);
+
+$todayPlusTwo = date(
+    "l", 
+    mktime(0, 0, 0, $parts[1], $parts[2] + 2, $parts[0])
+    //              ^ Month    ^ Day + 5      ^ Year
+);
+	
+$todayPlusThree = date(
+    "l", 
+    mktime(0, 0, 0, $parts[1], $parts[2] + 3, $parts[0])
+    //              ^ Month    ^ Day + 5      ^ Year
+);
+	
+$todayPlusFour = date(
+    "l", 
+    mktime(0, 0, 0, $parts[1], $parts[2] + 4, $parts[0])
+    //              ^ Month    ^ Day + 5      ^ Year
+);
+	
+$todayPlusFive = date(
+    "l", 
+    mktime(0, 0, 0, $parts[1], $parts[2] + 5, $parts[0])
+    //              ^ Month    ^ Day + 5      ^ Year
+);
+	
+$todayPlusSix = date(
+    "l", 
+    mktime(0, 0, 0, $parts[1], $parts[2] + 6, $parts[0])
+    //              ^ Month    ^ Day + 5      ^ Year
+);
+	
+$datePlusOne = date(
+    "Y-m-d", 
+    mktime(0, 0, 0, $parts[1], $parts[2] + 1, $parts[0])
+    //              ^ Month    ^ Day + 5      ^ Year
+);
+
+$datePlusTwo = date(
+    "Y-m-d", 
+    mktime(0, 0, 0, $parts[1], $parts[2] + 2, $parts[0])
+    //              ^ Month    ^ Day + 5      ^ Year
+);
+	
+$datePlusThree = date(
+    "Y-m-d", 
+    mktime(0, 0, 0, $parts[1], $parts[2] + 3, $parts[0])
+    //              ^ Month    ^ Day + 5      ^ Year
+);
+	
+$datePlusFour = date(
+    "Y-m-d", 
+    mktime(0, 0, 0, $parts[1], $parts[2] + 4, $parts[0])
+    //              ^ Month    ^ Day + 5      ^ Year
+);
+	
+$datePlusFive = date(
+    "Y-m-d", 
+    mktime(0, 0, 0, $parts[1], $parts[2] + 5, $parts[0])
+    //              ^ Month    ^ Day + 5      ^ Year
+);
+	
+$datePlusSix = date(
+    "Y-m-d", 
+    mktime(0, 0, 0, $parts[1], $parts[2] + 6, $parts[0])
+    //              ^ Month    ^ Day + 5      ^ Year
+);
+	
+	$weekly_hours = "
+      <div class='equalHMRWrap eqWrap'>
+        <div class='equalHMR eq'><span class='hoursToday'>Today</span><br>" . get_today($date,$section,$full) . "</div>
+        <div class='equalHMR eq'><span class='hoursDay'>Tomorrow</span><br>" . get_today($datePlusOne,$section,$full) . "</div>
+        <div class='equalHMR eq'><span class='hoursDay'>" . $todayPlusTwo . "</span><br>" . get_today($datePlusTwo,$section,$full) . "</div>
+        <div class='equalHMR eq'><span class='hoursDay'>" . $todayPlusThree . "</span><br>" . get_today($datePlusThree,$section,$full) . "</div>
+        <div class='equalHMR eq'><span class='hoursDay'>" . $todayPlusFour . "</span><br>" . get_today($datePlusFour,$section,$full) . "</div>
+        <div class='equalHMR eq'><span class='hoursDay'>" . $todayPlusFive . "</span><br>" . get_today($datePlusFive,$section,$full) . "</div>
+        <div class='equalHMR eq'><span class='hoursDay'>" . $todayPlusSix . "</span><br>" . get_today($datePlusSix,$section,$full) . "</div>
+      </div>";
+  
+
+return $weekly_hours;
+
+
+}
+
+
+
+function get_weekly_hours_array($nid){
+	
+$node = get_node($nid);
+	
+$hours = get_field_json($node['field_hours']['und'][0]['value']);
+$comments = $node['field_section_comments']['und'][0]['value'];
+
+if ( ($hours[1][1][2][1]=="open") || ($hours[1][1][2][1]=="appointment")){
+$hours_full[1][1]  = "<div>".$hours[1][1][1][1]." to ".$hours[1][1][1][2]."</div>";
+}
+if ( ($hours[1][1][1][1]=="12:00am") && ($hours[1][1][1][2]=="12:00am") ){
+$hours_full[1][1]   = "24hours";
+}
+if ($hours[1][1][2][1]=="closed"){
+$hours_full[1][1]   = "Closed";
+} 
+if ( ($hours[1][2][2][2]=="open") || ($hours[1][2][2][2]=="appointment")){
+$hours_full[1][2]  = "<div>".$hours[1][2][1][1]." to ".$hours[1][2][1][2]."</div>";
+}
+if ( ($hours[1][2][1][1]=="12:00am") && ($hours[1][2][1][2]=="12:00am") ){
+$hours_full[1][1]   = "24hours";
+} 
+if ($hours[1][2][2][2]=="closed"){
+$hours_full[1][2]   = "Closed";
+}  
+//////////////////////////////////////////////////////////////////////
+if ( ($hours[2][1][2][1]=="open") || ($hours[2][1][2][1]=="appointment")){
+$hours_full[2][1]  = "<div>".$hours[2][1][1][1]." to ".$hours[2][1][1][2]."</div>";
+}
+if ( ($hours[2][1][1][1]=="12:00am") && ($hours[2][1][1][2]=="12:00am") ){
+$hours_full[2][1]   = "24hours";
+}
+if ($hours[2][1][2][1]=="closed"){
+$hours_full[2][1]   = "Closed";
+} 
+if ( ($hours[2][2][2][2]=="open") || ($hours[2][2][2][2]=="appointment")){
+$hours_full[2][2]  = "<div>".$hours[2][2][1][1]." to ".$hours[2][2][1][2]."</div>";
+}
+if ( ($hours[2][2][1][1]=="12:00am") && ($hours[2][2][1][2]=="12:00am") ){
+$hours_full[2][2]   = "24hours";
+}
+if ($hours[2][2][2][2]=="closed"){
+$hours_full[2][2]   = "Closed";
+} 
+//////////////////////////////////////////////////////////////////////
+if ( ($hours[3][1][2][1]=="open") || ($hours[3][1][2][1]=="appointment")){
+$hours_full[3][1]  = "<div>".$hours[3][1][1][1]." to ".$hours[3][1][1][2]."</div>";
+}
+if ( ($hours[3][1][1][1]=="12:00am") && ($hours[3][1][1][2]=="12:00am") ){
+$hours_full[3][1]   = "24hours";
+} 
+if ($hours[3][1][2][1]=="closed"){
+$hours_full[3][1]   = "Closed";
+} 
+if ( ($hours[3][2][2][2]=="open") || ($hours[3][2][2][2]=="appointment")){
+$hours_full[3][2]  = "<div>".$hours[3][2][1][1]." to ".$hours[3][2][1][2]."</div>";
+}
+if ( ($hours[3][2][1][1]=="12:00am") && ($hours[3][2][1][2]=="12:00am") ){
+$hours_full[3][2]   = "24hours";
+} 
+if ($hours[3][2][2][2]=="closed"){
+$hours_full[3][2]   = "Closed";
+} 
+/////////////////////////////////////////////////////////////////////
+if ( ($hours[4][1][2][1]=="open") || ($hours[4][1][2][1]=="appointment")){
+$hours_full[4][1]  = "<div>".$hours[4][1][1][1]." to ".$hours[4][1][1][2]."</div>";
+}
+if ( ($hours[4][1][1][1]=="12:00am") && ($hours[4][1][1][2]=="12:00am") ){
+$hours_full[4][1]   = "24hours";
+} 
+if ($hours[4][1][2][1]=="closed"){
+$hours_full[4][1]   = "Closed";
+} 
+if ( ($hours[4][2][2][2]=="open") || ($hours[4][2][2][2]=="appointment")){
+$hours_full[4][2]  = "<div>".$hours[4][2][1][1]." to ".$hours[4][2][1][2]."</div>";
+}
+if ( ($hours[4][1][1][1]=="12:00am") && ($hours[4][2][1][2]=="12:00am") ){
+$hours_full[4][2]   = "24hours";
+} 
+if ($hours[4][2][2][2]=="closed"){
+$hours_full[4][2]   = "Closed";
+}  
+/////////////////////////////////////////////////////////////////////
+if ( ($hours[5][1][2][1]=="open") || ($hours[5][1][2][1]=="appointment")){
+$hours_full[5][1]  = "<div>".$hours[5][1][1][1]." to ".$hours[5][1][1][2]."</div>";
+}
+if ( ($hours[5][1][1][1]=="12:00am") && ($hours[5][1][1][2]=="12:00am") ){
+$hours_full[5][1]   = "24hours";
+} 
+if ($hours[5][1][2][1]=="closed"){
+$hours_full[5][1]   = "Closed";
+} 
+if ( ($hour[5][2][2][2]=="open") || ($hours[5][2][2][2]=="appointment")){
+$hours_full[5][2]  = "<div>".$hours[5][2][1][1]." to ".$hours[5][2][1][2]."</div>";
+}
+if ( ($hours[5][2][1][1]=="12:00am") && ($hours[5][2][1][2]=="12:00am") ){
+$hours_full[5][2]   = "24hours";
+} 
+if ($hours[5][2][2][2]=="closed"){
+$hours_full[5][2]   = "Closed";
+} 
+//////////////////////////////////////////////////////////////////////
+if ( ($hours[6][1][2][1]=="open") || ($hours[6][1][2][1]=="appointment")){
+$hours_full[6][1]  = "<div>".$hours[6][1][1][1]." to ".$hours[6][1][1][2]."</div>";
+}
+if ( ($hours[6][1][1][1]=="12:00am") && ($hours[6][1][1][2]=="12:00am") ){
+$hours_full[6][1]   = "24hours";
+} 
+if ($hours[6][1][2][1]=="closed"){
+$hours_full[6][1]   = "Closed";
+} 
+if ( ($hours[6][2][2][2]=="open") || ($hours[6][2][2][2]=="appointment")){
+$hours_full[6][2]  = "<div>".$hours[6][2][1][1]." to ".$hours[6][2][1][2]."</div>";
+}
+if ( ($hours[6][2][1][1]=="12:00am") && ($hours[6][2][1][2]=="12:00am") ){
+$hours_full[6][2]   = "24hours";
+} 
+if ($hours[6][2][2][2]=="closed"){
+$hours_full[6][2]   = "Closed";
+} 
+//////////////////////////////////////////////////////////////////////
+if ( ($hours[7][1][2][1]=="open") || ($hours[7][1][2][1]=="appointment")){
+$hours_full[7][1]  = "<div>".$hours[7][1][1][1]." to ".$hours[7][1][1][2]."</div>";
+} 
+if ($hours[7][1][2][1]=="closed"){
+$hours_full[7][1]   = "Closed";
+}
+if ( ($hours[7][1][1][1]=="12:00am") && ($hours[7][1][1][2]=="12:00am") ){
+$hours_full[7][1]   = "24hours";
+} 
+if ( ($hours[7][2][2][2]=="open") || ($hours[7][2][2][2]=="appointment")){
+$hours_full[7][2]  = "<div>".$hours[7][2][1][1]." to ".$hours[7][2][1][2]."</div>";
+}
+if ( ($hours[7][2][1][1]=="12:00am") && ($hours[7][2][1][2]=="12:00am") ){
+$hours_full[7][2]   = "24hours";
+}
+if ($hours[7][2][2][2]=="closed"){
+$hours_full[7][2]   = "Closed";
+}
+///////////////////////////////////////////////////////////////////////
+return $hours_full;
+}
+
+function get_closures_by_day($datetoshow,$section,$full){
+		$conn = conn();
+		$datetoshow = $datetoshow." 00:00:00";
+		$sql ="SELECT DISTINCT(e.nid) FROM node e, field_data_field_period_dates d, field_data_field_default t, field_data_field_special_hours x, field_data_field_section s ";
+	    $sql.="WHERE e.nid = d.entity_id ";		
+		$sql.="AND e.nid = t.entity_id ";
+		$sql.="AND e.nid = s.entity_id ";
+		$sql.="AND e.nid = x.entity_id ";
+    	$sql.=" AND ( '".$datetoshow."' BETWEEN d.field_period_dates_value AND d.field_period_dates_value2 ) ";     	
+	    $sql.="AND t.field_default_value='0' ";
+	    $sql.="AND x.field_special_hours_value='Yes' ";
+		$sql.="AND s.field_section_value = '".$section."' ";
+
+		$result = $conn->query($sql);
+		$array = array();
+
+		while (($row = $result->fetch_assoc()) !== NULL){			
+			$nid = $row['nid'];
+		}
+	
+
+$dow = date("N", strtotime($datetoshow));	
+$node=get_node($nid);
+	
+$hours = get_field_json($node['field_exception_hours']['und'][0]['value']);
+$x=0;
+	foreach($hours[1] as $date){
+	$datearray = explode("/",$date);
+	$date_year = $datearray[2];
+	$date_month = $datearray[0];
+	$date_day = $datearray[1];
+	$comments = $hours[5][$x];
+	$date_unix = strtotime($date_year."-".$date_month."-".$date_day);
+	$datetoshow_unix = substr($datetoshow, 0, 10);
+	$datetoshow_unix = strtotime($datetoshow_unix);
+
+		if ($date_unix==$datetoshow_unix){
+			
+			if (($hours[4][$x]=='closed')){
+				$today = "Closed";
+			}
+			
+			if ( ($comments<>"") && ($full=="yes") ) { $today = $comments;	}	
+
+		}
+
+	$x++;	
+	}
+	
+return $today;	
+}
+
+
+
+
+function get_current_hours($today,$section){
+		$conn = conn();
+		$today = $today." 00:00:00";
+	
+		$sql ="SELECT DISTINCT(e.nid) FROM node e, field_data_field_period_dates d, field_data_field_default t, field_data_field_order o   ";
+		if ($section<>"") $sql.=", field_data_field_section s ";
+	    $sql.="WHERE e.nid = d.entity_id ";		
+		$sql.="AND e.nid = t.entity_id ";
+	    $sql.="AND e.nid = o.entity_id ";
+		if ($section<>"") $sql.="AND e.nid = s.entity_id ";
+    	$sql.=" AND ( '".$today."' BETWEEN d.field_period_dates_value AND d.field_period_dates_value2 ) "; 
+	    $sql.="AND t.field_default_value='0' ";
+		if ($section<>"") $sql.="AND s.field_section_value = '".$section."' ";
+	    $sql.="ORDER BY o.field_order_value ASC";
+//echo $sql; //exit;
+		$result = $conn->query($sql);
+		$array = array();
+
+		while (($row = $result->fetch_assoc()) !== NULL){			
+			$nid = $row['nid'];
+			$node = (get_node($nid));
+			$section_order = $node['field_section_order']['und'][0]['value'];
+			$arrsection_order = explode("|",$section_order);
+			$section_orderKey = $arrsection_order[0];
+			$nids[]= array("nid"=>$nid,"order"=>$section_orderKey);
+		}
+	
+	   //array_sort_by_column_asc($nids, 'order');
+
+	
+	return $nids;
+}
+
+function get_full_hours(){
+if ($_POST['hours_open_by_date']<>""){
+	$today = $_POST['hours_open_by_date'];
+		$datearray = explode("/",$today);
+		$date_month = $datearray[0];
+		$date_day = $datearray[1];
+		$date_year = $datearray[2];
+		$today = $date_year."-".$date_month."-".$date_day;
+} else {
+$today = date("Y-m-d");
+}
+	
+	$sections[0] = "field_front_section";
+	$sections = field_info_field($sections[0]);
+	
+foreach($sections[settings][allowed_values] as $key => $value){ 
+	$hours = get_weekly_hours($today,$key,$full="yes"); 
+	$contact_info = get_section_contact_info($key);
+ 
+?>
+<div style="margin-top:20px;">
+<div><h2><?php echo $value;?></h2> <?php echo $contact_info; ?> </div>
+<div><?php echo($hours); ?></div>
+</div>
+<?php }  
+}
+
+function get_mini_hours(){
+
+$date = date("Y-m-d");
+$section = "building";
+$hours = get_weekly_hours($date,$section,$full="no");
+?>
+<div id="mini_hours">
+<div id="mini_hours_title">
+<i class="fa fa-clock-o" aria-hidden="true"></i>  Gelman Hours for GWorld Holders 
+</div>
+<?php echo($hours); ?>
+<div id="mini_hours_links">
+<a href="https://library.gwu.edu/hours/visitors">Visitor Hours</a> • <a href="/library-hours">Complete Hours Information</a> • <a href="https://library.gwu.edu/hours/closures">Holidays and Closures</a>
+</div>
+</div>
+<div class="handheld">
+  <div class="handheld-hours">
+    <i class="fa fa-clock-o" aria-hidden="true"></i>
+    GELMAN 
+  <?php echo get_today($date,$section,$full="no"); ?>
+  </div>
+  <div class="handheld-hours-links">
+    <a href="/library-hours">Complete Hours Information</a>
+  </div>
+</div>
+
+<?php  
+}
+
+function get_section_contact_info($section){
+		$conn = conn();
+	
+		$sql ="SELECT DISTINCT(e.nid) FROM node e, field_data_field_section s, field_data_field_section_contact_info c ";
+		$sql.="WHERE e.nid = s.entity_id ";	
+		$sql.="AND e.nid = c.entity_id ";	
+	    $sql.="AND s.field_section_value = '".$section."' ";
+	
+		$result = $conn->query($sql);
+
+		while (($row = $result->fetch_assoc()) !== NULL){			
+			$nid = $row['nid'];
+		}
+	
+			$node = get_node($nid);
+			$section_comments = $node['field_section_contact_info']['und'][0]['value'];
+
+		/**/
+	return $section_comments; 
+}
+
+function view_exception_hours($nid){
+$node=get_node($nid);
+$hours = objectToArray(json_decode($node['field_exception_hours']['und'][0]['value']));
+$count = (count($hours[1])-1);
+?>
+
+<?php for ($x = 0; $x <= $count; $x++) { ?>
+<div class="datepair">
+<?php echo date("l F j, Y", strtotime($hours[1][$x])); ?> 
+<?php if ($hours[2][$x]<>"") { ?>
+<?php echo $hours[2][$x]; ?> 
+<?php } ?>
+<?php if ($hours[3][$x]<>"") { ?>
+to <?php echo $hours[3][$x]; ?>
+<?php } ?>
+<?php echo " ".$hours[4][$x]; ?> 
+<?php if ($hours[5][$x]<>"") echo " (".$hours[5][$x].")"; ?>
+</div>
+<?php }   
+}
+
+function view_non_exception_hours($nid){
+	$arrayWeeklyHours = get_weekly_hours_array($nid);
+	?>
+	<div>
+	<div>Monday <?php echo $arrayWeeklyHours[1][1]; ?></div>
+	<div>Tuesday <?php echo $arrayWeeklyHours[2][1]; ?></div>
+	<div>Wednesday <?php echo $arrayWeeklyHours[3][1]; ?></div>
+	<div>Thursday <?php echo $arrayWeeklyHours[4][1]; ?></div>
+	<div>Friday <?php echo $arrayWeeklyHours[5][1]; ?></div>
+	<div>Saturday <?php echo $arrayWeeklyHours[6][1]; ?></div>
+	<div>Sunday <?php echo $arrayWeeklyHours[7][1]; ?></div>
+	</div>
+	<?php	
+}
+
+function validate(){
+	$countDays = count($_POST['exception_hours'][1]);
+	$countHoursStart = count($_POST['exception_hours'][2]);
+	$countHoursEnd = count($_POST['exception_hours'][3]);
+	$countHoursType = count($_POST['exception_hours'][4]);
+	$countComments = count($_POST['exception_hours'][5]);
+	$exception_hours = $_POST['exception_hours'];
+	$title = $_POST['hours_title'];
+	$section = $_POST['hours_section'];
+	$special_hours = $_POST['special_hours'];
+	$default = $_POST['hours_default'];
+	
+	$start = strtotime($_POST['hours_date_start']);
+	$end = strtotime($_POST['hours_date_end']);
+	
+$error="";
+
+if ($special_hours=="Yes"){
+//check for same number of dates in date range as number of eception dates
+//first get number of days in date range, including each date of the range.
+//in other words, include the first date, and each subsequent date
+//example 2017-12-01 to 2017-12-02 = 2 days
+$number_of_days_in_date_range = round(($end - $start) / 86400)+1;
+$days_match = match_number_of_days($number_of_days_in_date_range,$countDays);
+if (!$days_match){
+		$error .= "You must enter the same number of exception days as days in your date range.<BR>";
+}
+/////////////////////////////////////////////////////////////////////////////
+$emptyDates=false;
+$emptyHours1=false;
+$emptyHours2=false;
+$emptyComments=false;
+	
+	
+
+for ($x = 0; $x <= $countDays-1; $x++) {
+	if ($exception_hours[1][$x]==""){
+		$emptyDates=true;
+		$error .= "Each Exception Date must be entered.<BR>";
+		break;
+	}
+}
+
+
+for ($x = 0; $x <= $countDays-1; $x++) {
+	if ($exception_hours[2][$x]==""){
+		$emptyHours1=true;
+	}
+}
+for ($x = 0; $x <= $countDays-1; $x++) {
+	if ($exception_hours[3][$x]==""){
+		$emptyHours2=true;
+	}
+}
+for ($x = 0; $x <= $countDays-1; $x++) {
+	if ($exception_hours[5][$x]==""){
+		$emptyComments=true;
+	}
+}
+if ( ($emptyComments==false) && ($exception_hours[4][$x]<>"closed") ){
+	if ( ($emptyHours1) || ($emptyHours2) ){
+		$error .= "Each Exception Date must have either a comment or both hours.<BR>";
+	}
+}
+	
+
+
+/**/	
+	if ($error<>""){
+		return $error;
+	}
+	
+}
+	
+
+}
+
+function match_number_of_days($number_of_days_in_date_range,$countDays){
+	
+	if ($number_of_days_in_date_range<>$countDays){
+	//echo "Number of days don't match";	
+		return false;
+	} else {
+	//echo "Number of days match";
+		return true;
+	}
+}

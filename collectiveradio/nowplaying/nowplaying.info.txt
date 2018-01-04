@@ -1,0 +1,11 @@
+name = Now Playing
+description = This module provides now playing data derived from the icecast playlist logs.
+core = 7.x
+package = CollectiveRadio
+dependencies[] = collectiveradio
+
+; Information added by drupal.org packaging script on 2017.2.25
+version = "7.x-2.x-dev"
+core = "7.x"
+project = "collectiveradio"
+datestamp = "1380637887"
