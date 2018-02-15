@@ -1,0 +1,12 @@
+
+/*cd to directory where you want the clone to be put */
+git clone https://github.com/gwu-libraries/lai-libsite.git
+git clone https://github.com/bkylekelly/gwulibrary-webdev.git
+
+/* refreshes the git dir */
+git pull origin
+git branch
+git commit --amend --reset-author
+git commit -am "fixed syntax"
+
+git push -u origin master

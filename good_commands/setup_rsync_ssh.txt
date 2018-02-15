@@ -1,0 +1,33 @@
+https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys
+
+
+on host server
+
+mkdir ~/.ssh
+
+ssh-keygen -f ~/.ssh/id_rsa -q -P ""
+cat ~/.ssh/id_rsa.pub
+
+
+copy key, which looks something like this:
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2kLD4LgR43eYxp5cRn+P4xEu7ZFQebGPj1RoisdfOL0337zKXd8hNaXn0Z+Rd4HxH83bMgk189NcOxDbubzttjY7JZE4/7H13xOD/ktkGIDjlgA97GqEMarMxOdZoL78MRCzxfq7K773G1p6g3ZZTErwVJuFbl/yyc+L1EwT1RdiW4xVLqTmAyitIeetXszA1/63RShgV/OpZkbhFsN1n6IJU4BQmZZdZzIQaxzn4DcCOzk99XJzw8mqsOYCLvfBOC0xPkNNIyBsZ+RDiRkGS9xi038bNMgaSU57f03rtAaElQOq1lq3FJXchxtR7AbdUv8JU9RN3CKJKPSCEOW7R root@gwlibrary-test14
+
+on remote server
+
+mkdir ~/.ssh
+chmod 0700 ~/.ssh
+touch ~/.ssh/authorized_keys
+chmod 0644 ~/.ssh/authorized_keys
+
+paste above key in ~/.ssh/authorized_keys
+
+========================================================
+
+add to known hosts on ORIGIN
+ssh-keygen -R backup.library.gwu.edu
+ssh-keyscan -H backup.library.gwu.edu >> ~/.ssh/known_hosts
+
+
+to get feedback for connection attempt:
+ssh -vvv user@hostname

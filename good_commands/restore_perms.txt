@@ -1,0 +1,6 @@
+#!/bin/sh
+
+chmod 775 -R /home/library/www/html
+chmod 777 -R /home/library/www/html/sites/default/files
+chmod 444 /home/library/www/html/sites/default/settings.php
+chmod 444 /home/library/www/html/.htaccess

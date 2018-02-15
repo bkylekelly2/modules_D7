@@ -1,0 +1,10 @@
+#!/bin/sh
+
+#this is to run on the backup site or the site to be synced with the live site, ie backup.library.gwu.edu
+server=test.library.gwu.edu
+
+if nc -z $server 8080 2>/dev/null; then
+    echo "$server up"
+else
+    echo "$server down"
+fi

@@ -1,0 +1,7 @@
+cat  /etc/ssl/private/library-gwu-edu.key /etc/ssl/certs/library_gwu_edu_cert.cer > /etc/ssl/private/library-gwu-edu.pem
+
+
+        SSLCertificateFile /etc/ssl/certs/library_gwu_edu_cert.cer
+        SSLCertificateKeyFile /etc/ssl/private/library-gwu-edu.key
+#       SSLCertificateChainFile /etc/ssl/intermediate/incommon-inter.ca-bundle
+        SSLCertificateChainFile /etc/ssl/intermediate/library_gwu_edu_interm.cer

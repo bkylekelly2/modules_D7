@@ -1,0 +1,15 @@
+#!/bin/sh
+
+#this is to run on the live site
+
+#server=test.library.gwu.edu
+
+#if nc -z $server 8080 2>/dev/null; then
+   # echo "$server up"
+mysql -h localhost -u drupal-admin -pGWLibraryInstanceAdmin! gwlibrary < /home/library/www/sql/sql.sql
+
+rm  /home/library/www/sql/sql.sql
+
+#else
+#    echo "$server down"
+#fi

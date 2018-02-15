@@ -1,0 +1,9 @@
+# do dump in ~/backups/sql and mv to /home/git/backup
+
+mysqldump -u drupal-admin -pGWLibraryInstanceAdmin! gwlibrary > /home/git/backup/sql.sql
+
+sudo git add sql.sql
+
+sudo git commit -m "add sql backup"
+
+sudo git push -u origin master *will ask for username and password* need to automate in script

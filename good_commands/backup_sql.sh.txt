@@ -1,0 +1,6 @@
+#!/bin/sh
+#run on library.gwu.edu or site to be backed up
+
+mysqldump -u drupal-admin -pGWLibraryInstanceAdmin! gwlibrary > /home/library/www/backup/sql/sql.sql
+rsync -avz -e "/usr/share/centrifydc/bin/ssh -p 9999 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" /home/library/www/backup/sql/ bkylekelly@dev.library.gwu.edu:/home/bkylekelly/backups/sql
+rm -f /home/library/www/backup/sql/sql.sql

@@ -1,0 +1,13 @@
+sudo chown -R drupal_user:drupal_group /home/library/www
+sudo chown -R spec:spec /home/library/www/html/ead
+
+
+
+
+sudo chown -R drupal_user:drupal_group /home/library/www/*
+sudo chmod -R 575 /home/library/www/html/*
+sudo chmod -R 777 /home/library/www/html/sites/default/files
+sudo chmod -R 444 /home/library/www/html/.htaccess
+sudo chmod -R 444 /home/library/www/html/sites/default/settings.php
+sudo chown -R spec:spec /home/library/www/html/ead
+sudo chmod -R 777 /home/library/www/private

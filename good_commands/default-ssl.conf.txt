@@ -1,0 +1,55 @@
+<VirtualHost *:4433>
+
+        ServerAdmin gwlib-root@groups.gwu.edu
+        ServerName test.library.gwu.edu
+
+        DocumentRoot /home/library/www/html
+
+        SSLEngine on
+        SSLOptions +StrictRequire
+        SSLProtocol All -SSLv2 -SSLv3
+        SSLCertificateFile /etc/ssl/certs/test_library_gwu_edu_cert.cer
+        SSLCertificateKeyFile /etc/ssl/private/test-library-gwu-edu.key
+#       SSLCertificateChainFile /etc/ssl/intermediate/incommon-ssl.ca-bundle
+        SSLCertificateChainFile /etc/ssl/intermediate/test_library_gwu_edu_interm.cer
+
+#       Kyle commected out the following Redirect so that the implementation of
+#       ssl for the bento search-all could proceed
+#       Redirect 301 /search-all http://test.library.gwu.edu/search-all
+
+        <Directory /home/library/www/html/>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride All
+                Order allow,deny
+                allow from all
+        </Directory>
+
+        ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+
+i        <Directory "/usr/lib/cgi-bin">
+                AllowOverride None
+                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+        ErrorLog /var/log/apache2/error-ssl.log
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+
+        CustomLog /var/log/apache2/access-ssl.log combined
+
+        Alias /doc/ "/usr/share/doc/"
+
+
+        <Directory "/usr/share/doc/">
+                Options Indexes MultiViews FollowSymLinks
+                AllowOverride None
+                Order deny,allow
+                Deny from all
+                Allow from 127.0.0.0/255.0.0.0 ::1/128
+        </Directory>
+
+</VirtualHost>i

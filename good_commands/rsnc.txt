@@ -1,0 +1,9 @@
+#!/bin/sh
+
+#this is to run on the live site
+
+/usr/bin/rsync -auv -e "/usr/share/centrifydc/bin/ssh -i /home/bkylekelly/.ssh/id_rsa -p 9999 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" /home/library/www/ bkylekelly@backup.library.gwu.edu:/home/library/www
+
+/usr/bin/rsync -auv -e "/usr/share/centrifydc/bin/ssh -i /home/bkylekelly/.ssh/id_rsa -p 9999 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" /home/library/www/sql/ bkylekelly@backup.library.gwu.edu:/home/library/www/sql
+
+#/usr/bin/rsync -auv -e "/usr/share/centrifydc/bin/ssh -i /home/bkylekelly/.ssh/id_rsa -p 9999 " /home/library/www/ gwufailover@gwufailover.com:/home/gwufailover/public_html/

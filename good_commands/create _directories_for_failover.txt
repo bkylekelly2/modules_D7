@@ -1,0 +1,50 @@
+on ORIGIN SERVER
+
+sudo mkdir /home/bkylekelly/backups/scripts
+sudo mkdir /home/library/www/backup/sql
+sudo vi /home/bkylekelly/backups/scripts/backup_site.sh
+sudo vi /home/bkylekelly/backups/scripts/rsync_site.sh
+sudo vi /home/bkylekelly/backups/scripts/restore_site.sh
+sudo chmod +x /home/bkylekelly/backups/scripts/backup_site.sh
+sudo chmod +x /home/bkylekelly/backups/scripts/rsync_site.sh
+sudo chmod +x /home/bkylekelly/backups/scripts/restore_site.sh
+========================================================================
+
+on DESTINATION SERVER
+
+sudo mkdir /home/bkylekelly/backups/scripts
+sudo mkdir /home/library/www/backup/sql
+sudo vi /home/bkylekelly/backups/scripts/open_perms.sh
+sudo vi /home/bkylekelly/backups/scripts/sync_site.sh
+sudo vi /home/bkylekelly/backups/scripts/restore_perms.sh
+sudo chmod 777 -R /home/library/www/backup/sql
+sudo chmod +x /home/bkylekelly/backups/scripts/open_perms.sh
+sudo chmod +x /home/bkylekelly/backups/scripts/sync_site.sh
+sudo chmod +x /home/bkylekelly/backups/scripts/restore_perms.sh
+========================================================================
+
+on DESTINATION SERVER
+
+sudo mkdir /home/library/www/sql
+sudo chmod 777 -R /home/library/www/backup/sql/
+========================================================================
+
+
+on ORIGIN SERVER
+in sudo crontab -e
+
+*/5 * * * * /bin/sh /home/bkylekelly/backups/scripts/backup_site.sh
+*/5 * * * * sleep 120; /bin/sh /home/bkylekelly/backups/scripts/restore_site.sh
+===============================================================================
+
+on ORIGIN SERVER
+in crontab -e
+*/5 * * * * sleep 30;  /bin/sh /home/bkylekelly/backups/scripts/rsync_site.sh
+========================================================================
+
+on DESTINATION SERVER
+sudo crontab -e
+*/5 * * * * sleep 15; /bin/sh /home/bkylekelly/backups/scripts/open_perms.sh
+*/5 * * * * sleep 90; /bin/sh /home/bkylekelly/backups/scripts/sync_site.sh
+*/5 * * * * sleep 120; /bin/sh /home/bkylekelly/backups/scripts/restore_perms.sh
+========================================================================

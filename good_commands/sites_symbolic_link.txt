@@ -1,0 +1,24 @@
+method to create symbolic link:
+sudo cp -R /home/library/www/html/sites /home/sites
+sudo mv sites sites_backup
+cd /home/library/www/html
+ln -s /home/sites sites
+
+once working:
+
+sudo rm -R sites_backup
+
+Note: there is a symbolic link from /home/library/www/html/sites to /home/sites
+
+
+
+sudo rm -r sites
+ln -s /home/sites sites
+
+
+/*remove ead if there then create symbolic link */
+sudo rm -r /home/library/www/html/*
+/*use this one to create symbolic link*/
+sudo ln -s /home/library/www/html/ead /var/www/html/ead
+
+sudo ln -s /var/www/html/ead /home/library/www/html/ead

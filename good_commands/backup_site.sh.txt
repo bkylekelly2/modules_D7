@@ -1,0 +1,15 @@
+#!/bin/sh
+
+#this is to run on the live site
+#rm -f /home/library/www/backup/sql/sql.sql
+#server=test.library.gwu.edu
+
+#if nc -z $server 8080 2>/dev/null; then
+   # echo "$server up"
+cd /home/library/www/backup/sql
+mysqldump -u drupal-admin -pGWLibraryInstanceAdmin! gwlibrary > sql.sql
+chmod 777 -R sql.sql
+chmod 777 -R /home/library/www/html
+#else
+#echo "$server down"
+#fi

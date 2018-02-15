@@ -1,0 +1,10 @@
+#!/bin/sh
+
+#this is to run on the live site
+
+rm -f /home/bkylekelly/backups/site/html.tar.gz
+rm -R /home/bkylekelly/backups/site/html
+rm -f /home/bkylekelly/backups/sql/sql.sql
+chmod 775 -R /home/library/www/html
+chmod 444 /home/library/www/html/sites/default/settings.php
+chmod 444 /home/library/www/html/.htaccess

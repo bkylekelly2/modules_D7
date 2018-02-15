@@ -1,0 +1,6 @@
+sudo tar xzvf backup.tar
+
+diff -r libsite7b ~/lai-libsite/libsite7b | less
+
+sudo cp library.gwu.edu-SQL-Sep-15-17-09:00:01.tar /home/bkylekelly/backup.tar
+

@@ -1,0 +1,6 @@
+#!/bin/sh
+#this is to be run on the site to sync with the live site.
+
+cd /home/bkylekelly/backups/sql/
+mysql -u drupal-admin -pGWLibraryInstanceAdmin! gwlibrary < sql.sql
+rm -f sql.sql

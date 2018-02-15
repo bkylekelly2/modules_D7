@@ -1,0 +1,28 @@
+$databases = array (
+  'default' => 
+  array (
+    'default' => 
+    array (
+      'database' => 'gwlibrary',
+      'username' => 'drupal-admin',
+      'password' => 'GWLibraryInstanceAdmin!',
+      'host' => 'localhost',
+      'port' => '',
+      'driver' => 'mysql',
+      'prefix' => '',
+    ),
+  ),
+);
+
+create tar:
+tar -cvf - /home/bkylekelly/backups/site/html | gzip > /home/bkylekelly/backups/site/html.tar.gz
+
+
+
+untar:
+sudo tar -xvzf 1909.tar.gz
+
+import: mysql -u drupal-admin -pGWLibraryInstanceAdmin! gwlibrary < sql.sql
+
+export: mysqldump -u drupal-admin -pGWLibraryInstanceAdmin! gwlibrary > sql.sql
+
