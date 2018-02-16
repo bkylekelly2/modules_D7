@@ -47,11 +47,6 @@ Drupal.behaviors.insert.attach = function(context) {
       style: style,
       fields: {}
     };
-	  
-	
-    var alt_text_field = $('input.form-text', wrapper);
-
-
 
     // Update replacements.
     for (var fieldName in settings.fields) {
@@ -64,11 +59,6 @@ Drupal.behaviors.insert.attach = function(context) {
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;');
       }
-		
-	//trim leading and trailing white spaces from the alt text
-		fieldValue = $.trim(fieldValue);
-		
-		
       options['fields'][fieldName] = fieldValue;
       if (fieldValue) {
         var fieldRegExp = new RegExp('__' + fieldName + '(_or_filename)?__', 'g');
@@ -100,35 +90,31 @@ Drupal.behaviors.insert.attach = function(context) {
     }
 
     // Allow other modules to perform replacements.
-    
-	  options['content'] = content;
+    options['content'] = content;
     $.event.trigger('insertIntoActiveEditor', [options]);
     content = options['content'];
 
     // Cleanup unused replacements.
     content = content.replace(/"__([a-z0-9_]+)__"/g, '""');
 
-     //Cleanup empty attributes (other than alt).
+    // Cleanup empty attributes (other than alt).
     content = content.replace(/([a-z]+)[ ]*=[ ]*""/g, function(match, tagName) {
       return (tagName === 'alt') ? match : '';
     });
 	  
-
-    //match empty and white spaces
-	  alt = content.match(/alt[ ]*=[ ]*"\s*"/i);
-	  if  (alt){
-		  alert("The alternate text field is required!"); //alt=""
-		  alt_text_field.addClass('error').focus();
-		  return false;
-	  }
+//// before inserting into body, make sure the alternative text field is not empty
+ if (($("[id^=edit-field-][id$=-alt]").attr("value")==="")) {
+			 alert("The alternate text field is required!");
+			 $("[id^=edit-field-][id$=-alt]").addClass('error').focus();
+			  return false;
+		 }
 	  
-    // //match empty and white spaces
-	  alt = content.match(/alt[ ]*=[ ]*"\s*"/i);
-	  if  (!alt){
-		  alt_text_field.removeClass('error');
-	  }
-	  
+//// if there are no empty alternative text fields, make sure to remove the error class
+ if (($("[id^=edit-field-][id$=-alt]").attr("value")!=="")) {
+			 $("[id^=edit-field-][id$=-alt]").removeClass('error');
+		 }
 
+///field_images_access[und][0][alt]
     // Insert the text.
     Drupal.insert.insertIntoActiveEditor(content);
   }

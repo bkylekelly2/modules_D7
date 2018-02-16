@@ -394,75 +394,8 @@ return($output);
 }
 
 function get_page_nav(){ 
-global $user; 
-	if(isset($user->name)){
-		$userName = $user->name;
-	}
-	if(isset($user->uid)){
-		$userID = $user->uid;
-	}
-	
-$url = drupal_get_path_alias(current_path());
 
-?>
-
-<!-- Fixed navbar -->
-    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top navbar-custom">
-        <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header page-scroll">
-                <a style="color:#F3DC0A;position:relative;top:15px;text-decoration:none;font-family:vedana;font-weight:600;font-size:medium;" href="https://www.collectiveradio.com">Collective Radio</a>
-            </div>          
-         
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="hidden">
-                        <a href="#page-top"></a>
-                    </li>
-                     <?php if ( $userID ) { ?>
-                    <li class="page-scroll">
-						<div class="dropdown" id="drpdnusername" >
-						<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top:8px;background-color:#000000; color:#ffffff; font-weight:bold;">
-						<?php echo $userName; ?>
-						</button>
-						<div class="dropdown-menu text-center" aria-labelledby="dropdownMenuButton">
-						<a class="dropdown-item" href="/user" style="color:#000000;">Account</a><BR>
-						<?php if (in_array('administrator', $user->roles)) { ?>
-            			<a href="https://www.collectiveradio.com/admin" style="color:#000000;">Admin</a><BR>
-            			<a class="dropdown-item" href="/cart" style="color:#000000;">Cart</a><BR>
-
-						<a class="dropdown-item" href="/user/logout" style="color:#000000;">Sign Out</a>
-            			<?php } ?>
-						</div>
-						
-						</div>
-									
-					
-						</div>
-                    </li>                   
-                    <?php } ?>
-                     <?php if ( !$userID ) { ?>
-							<li class="page-scroll">
-								<a href="/user/login" style="color:#F3DC0A;text-decoration:none;font-family:vedana;font-weight:600;font-size:medium;">Sign In</a>
-							</li>                   
-                    <?php } ?>
-
-                </ul>
-            </div>
-
-       <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container-fluid -->
-    </nav>
-    
-<?php if (user_is_logged_in()){ ?>
-	<div id="add_margin_bottom_logged_in"></div>
-<?php } else { ?>
-	<div id="add_margin_bottom_not_logged_in"></div>
-<?php } ?>
-
-<?php }
+}
 
 function get_page_footer(){
 		if (arg(0) == 'node') {$nid = arg(1);}
@@ -516,14 +449,13 @@ function get_page_footer(){
 <?php }
 
 
-function get_social_share_buttons(){ 
-	if (arg(0) == 'node') {$nid = arg(1);}
+function get_social_share_buttons($nid){ 
 	$url = drupal_get_path_alias('node/'.$nid.'');
-?><div class="row">
-        <div class="col-xs-12 col-md-12 col-lg-12 col-xl-12 text-center">
-                <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.collectiveradio.com/<?php echo $url;?>"><i class="fa fa-facebook-square fa-3x social" target="_blank"></i></a>
+?><div class="therow">
+        <div class="column">
+                <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.collectiveradio.com/<?php echo $url;?>" target="_blank"><i class="fa fa-facebook-square fa-3x social" target="_blank"></i></a>
 	            <a href="https://twitter.com/intent/tweet?text=https://www.collectiveradio.com/<?php echo $url;?>"><i class="fa fa-twitter-square fa-3x social" target="_blank"></i></a>            
-            </div>
+        </div>
     </div>    
 <?php }
 

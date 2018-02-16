@@ -1,40 +1,77 @@
 <?php
 
-function ads_cron(){
-//ingest_ads_live();
-}
-    /**
+   /**
     * Implements hook_menu().
     */
     function ads_menu() {
-      $items['ads/ads'] = array(
-        'title' => 'ads',
-        'page callback' => 'ads_ads_callback',
+      $items['display_hero_ad'] = array(
+        'title' => 'hero ads',
+        'page callback' => 'hero_ads_callback',
+        'access arguments' => array('access content'),
+      );
+      $items['display_right_ads'] = array(
+        'title' => 'right ads',
+        'page callback' => 'right_ads_callback',
         'access arguments' => array('access content'),
       );
      
       return $items;
     }
-
+	
     /**
     * Custom callback functions.
     */
-    function ads_ads_callback() {
-      get_ad();
+    function hero_ads_callback() {
+      get_hero_ad();
+    }
+    function right_ads_callback() {
+      get_right_ads();
     }
 	
-function get_ad(){
+function get_hero_ad(){
 $query = new EntityFieldQuery();
 $query->entityCondition('entity_type', 'node')
   ->entityCondition('bundle', 'advertisement')
+  ->fieldCondition('field_ad_type', 'value', 'hero', '=')
   ->propertyCondition('status', NODE_PUBLISHED)
-  ->addTag('random')
-  ->range(0, 1)
+    ->addTag('random')
+    ->range(0,1)
   ->addMetaData('account', user_load(1)); // Run the query as user 1.
+	
 $result = $query->execute();
 if (isset($result['node'])) {
-  $log_items_nids = array_keys($result['node']);
+  $nid = array_keys($result['node']);
 }
+$ad = objectToArray(node_load($nid[0]));
+	
+	//print_r($ad);
+	
+echo '<img src="/sites/default/files/'.$ad['field_image']['und'][0]['filename'].'" width="728" height="90" />';
+
+}	
+function get_right_ads(){
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'advertisement')
+  ->fieldCondition('field_ad_type', 'value', 'right', '=')
+  ->propertyCondition('status', NODE_PUBLISHED)
+    ->addTag('random')
+    ->range(0,1)
+  ->addMetaData('account', user_load(1)); // Run the query as user 1.
+	
+$result = $query->execute();
+if (isset($result['node'])) {
+  $right_nid = array_keys($result['node']);
+}
+$right_ad = objectToArray(node_load($right_nid[0]));
+	
+	//print_r($ad);
+	
+echo '<img src="/sites/default/files/'.$right_ad['field_image']['und'][0]['filename'].'" width="300" height="100" />';
+
+}
+
+/*
 foreach($log_items_nids as $_nid){
 $ad = node_load($_nid);
 $ad = objectToArray($ad);
@@ -42,10 +79,6 @@ $ad = objectToArray($ad);
 	$url = drupal_get_path_alias('node/'.$_nid.'');
 
 //$output .= '<a href="'.$url.'"><img src="/sites/default/files/'.$ad['field_image']['en'][0]['filename'].'" height="220" width="220" /></a>';
-$output .= '<img src="/sites/default/files/'.$ad['field_image']['en'][0]['filename'].'" height="220" width="220" />';
+$output .= '<img src="/sites/default/files/'.$ad['field_image']['und'][0]['filename'].'" />';
 }
-?>
-
-<?php echo $output; ?>
-
-<?php }
+*/

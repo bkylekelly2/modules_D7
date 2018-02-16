@@ -23,7 +23,7 @@
   <input type="hidden" class="insert-style" value="<?php print $default_style ?>" />
 <?php endif; ?>
 
-  <input type="submit" rel="<?php print $widget_type ?>" class="form-submit insert-button" onclick="return false;" value="<?php print t('Insert'); ?>" />
+  <input type="submit" rel="<?php print $widget_type ?>" class="form-submit insert-button" id="insert-button" onclick="return false;" value="<?php print t('Insert'); ?>" />
 
 <?php if (count($insert_styles) > 1): ?>
   </div>

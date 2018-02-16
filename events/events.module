@@ -1,118 +1,68 @@
-<?php
+<?php 
 
-/**
- * Implements hook_menu().
- */
-function events_menu() {
-  $items = array();
-    $items['events'] = array(
-
-//		'title' => "Events at GW Libraries",
-
-		'page callback' => 'events_function',
-
-    	'access arguments' => array("access content"),
-
-    	'type' => MENU_NORMAL_ITEM,
-
-	);
-    $items['events/results'] = array(
-
-//		'title' => "Events at GW Libraries",
-
-		'page callback' => 'events_results_function',
-
-    	'access arguments' => array("access content"),
-
-    	'type' => MENU_NORMAL_ITEM,
-
-	);
-    $items['events/count'] = array(
-
-//		'title' => "Events at GW Libraries",
-
-		'page callback' => 'events_count_function',
-
-    	'access arguments' => array("access content"),
-
-    	'type' => MENU_NORMAL_ITEM,
-
-	);
-	
-    $items['events/pager'] = array(
-
-//		'title' => "Events at GW Libraries",
-
-		'page callback' => 'events_pager_function',
-
-    	'access arguments' => array("access content"),
-
-    	'type' => MENU_NORMAL_ITEM,
-
-	);
-	
-    $items['events/sql'] = array(
-
-//		'title' => "Events at GW Libraries",
-
-		'page callback' => 'events_sql_function',
-
-    	'access arguments' => array("access content"),
-
-    	'type' => MENU_NORMAL_ITEM,
-
-	);
-	
-    $items['events/pagination'] = array(
-
-//		'title' => "Events at GW Libraries",
-
-		'page callback' => 'events_pagination_function',
-
-    	'access arguments' => array("access content"),
-
-    	'type' => MENU_NORMAL_ITEM,
-
-	);
-	
-    $items['events/build_url'] = array(
-
-//		'title' => "Events at GW Libraries",
-
-		'page callback' => 'events_build_url_function',
-
-    	'access arguments' => array("access content"),
-
-    	'type' => MENU_NORMAL_ITEM,
-
-	);
-	
-    $items['events/send_email'] = array(
-
-//		'title' => "Events at GW Libraries",
-
-		'page callback' => 'events_send_email_function',
-
-    	'access arguments' => array("access content"),
-
-    	'type' => MENU_NORMAL_ITEM,
-
-	);
-	
-    $items['events/rowcount'] = array(
-
-//		'title' => "Events at GW Libraries",
-
-		'page callback' => 'events_row_count_function',
-
-    	'access arguments' => array("access content"),
-
-    	'type' => MENU_NORMAL_ITEM,
-
-	);
-	
-  return $items;
+function events_cron(){
+//ingest_events_live();
 }
+    /**
+    * Implements hook_menu().
+    */
+function events_menu() {
+		
+		
+	$items['events/events_to_ingest'] = array(
+        'title' => 'Get Events to Refresh',
+        'page callback' => 'events_get_refreshed_events',
+        'access arguments' => array('access content'),
+      );
+		
+		
+		
+	$items['events/ingest_events'] = array(
+        'title' => 'Ingest Events',
+        'page callback' => 'events_ingest_events',
+        'access arguments' => array('access content'),
+      );
+		
+		
+
+	$items['events/refresh_events'] = array(
+        'title' => 'Set Refreshed Events To No',
+        'page callback' => 'reset_refreshed_events',
+        'access arguments' => array('access content'),
+      );
+		
+		
+
+	$items['events/delete_events'] = array(
+        'title' => 'Delete Events',
+        'page callback' => 'delete_events',
+        'access arguments' => array('access content'),
+      );
+		
+	$items['events'] = array(
+        'title' => 'Events',
+        'page callback' => 'events_function',
+        'access arguments' => array('access content'),
+      );
+		
+	$items['search_events'] = array(
+        'title' => 'Search Events',
+        'page callback' => 'search_events',
+        'access arguments' => array('access content'),
+      );
+	
+    $items['events/add-to-cart/%node'] = array(
+    'title' => 'Add item to cart',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access checkout'),
+    'page callback' => 'events_add_to_cart',
+  ); 
+      return $items;
+}
+
+   /**
+    * Custom callback functions.
+    */
 
 function events_function(){
 
@@ -120,56 +70,6 @@ function events_function(){
 	
 }
 
-function events_results_function(){
-
-	echo search_results();
-	
-}
-
-function events_row_count_function(){
-
-	echo row_count();
-	
-}
-
-function events_count_function(){
-
-	echo search_count();
-	
-}
-
-function events_pager_function(){
-
-	echo search_pager();
-	
-}
-
-function events_sql_function(){
-
-	echo search_sql();
-	
-}
-
-function events_pagination_function(){
-
-	echo search_pagination();
-	
-}
-
-function events_build_url_function(){
-
-	echo build_url();
-	
-}
-
-function events_send_email_function(){
-
-	echo events_send_email();
-	
-}
-/**
- * Implements hook_theme()
- */
 function events_theme(){
   return array(
     'events_template' => array(
@@ -179,961 +79,657 @@ function events_theme(){
   );
 }
 
-function search_sql() {
-if ($_POST["format"]<>""){
-$format=$_POST["format"];
-}
-if ($_GET["format"]<>""){
-$format=$_GET["format"];
-}
-if ($_POST["open_to"]<>""){
-$open_to=$_POST["open_to"];
-}
-if ($_GET["open_to"]<>""){
-$open_to=$_GET["open_to"];
-}
-if ($_POST["sponsor"]<>""){
-$sponsor=$_POST["sponsor"];
-}
-if ($_GET["sponsor"]<>""){
-$sponsor=$_GET["sponsor"];
-}
-if ($_POST["open_to"]<>""){
-$open_to=$_POST["open_to"];
-}
-if ($_GET["open_to"]<>""){
-$open_to=$_GET["open_to"];
-}
-if ($_POST["series"]<>""){
-$series=$_POST["series"];
-}
-if ($_GET["series"]<>""){
-$series=$_GET["series"];
-}
-if ($_POST["terms"]<>""){
-$terms=$_POST["terms"];
-}
-if ($_GET["terms"]<>""){
-$terms=$_GET["terms"];
-}
-if ($_POST["events_date_start"]<>""){
-$events_date_start=$_POST["events_date_start"];
-}
-if ($_GET["events_date_start"]<>""){
-$events_date_start=$_GET["events_date_start"];
-}
-if ($_POST["events_date_end"]<>""){
-$events_date_end=$_POST["events_date_end"];
-}
-if ($_GET["events_date_end"]<>""){
-$events_date_end=$_GET["events_date_end"];
-}
-if ($_POST["order"]<>""){
-$order=$_POST["order"];
-}
-if ($_GET["order"]<>""){
-$order=$_GET["order"];
-}
-if ($_POST["category"]<>""){
-$category=$_POST["category"];
-}
-if ($_GET["category"]<>""){
-$category=$_GET["category"];
-}
-$page=get_page();
+function reset_refreshed_events(){
 
-if ($order=="")	{
-$order="DATE_ASC";
-}
-
-	//print_r( drupal_get_query_parameters($_GET) ); exit;
-	$today = date("Y-m-d H:i:s");
-	
-    if (strpos($events_date_start, "/")){
-    $datearray = explode("/",$events_date_start);
-    $date_month = $datearray[0];
-    $date_day = $datearray[1];
-    $date_year = $datearray[2];
-    $events_date_start = $date_year."-".$date_month."-".$date_day;
-    }	
-    if (strpos($events_date_end, "/")){
-    $datearray = explode("/",$events_date_end);
-    $date_month = $datearray[0];
-    $date_day = $datearray[1];
-    $date_year = $datearray[2];
-    $events_date_end = $date_year."-".$date_month."-".$date_day;
-    }
-
-	$date_range_start = $events_date_start .date(" 00:00");
-	$date_range_end = $events_date_end .date(" 23:59");
-	
-	$sql="SELECT DISTINCT(e.nid) FROM node e, field_data_field_event_date d ";
-	
-	if ( ($terms<>"") ) {
-	$sql.=",field_data_body b ";
-	}
-	
-	if ( ($format<>"") ) {
-	$sql.=",field_data_field_event_format f ";
-	}
-	
-	if ( ($sponsor<>"") ) {
-	$sql.=",field_data_field_event_unit u ";	
-	}
-	
-	if ( ($open_to<>"") ) {
-	$sql.=",field_data_field_event_type t ";	
-	}
-	
-	if ( ($category<>"") ) {
-	$sql.=",field_data_field_event_category c ";	
-	}
-	
-	if ( ($series<>"") ) {
-	$sql.=",field_data_field_event_series s ";
-	}
-	
-	if ( ($room<>"") ) {
-	$sql.=",field_data_field_event_room r ";	
-	}
-	
-	
-	$sql.="WHERE e.status = 1 AND e.nid = d.entity_id ";
-	
-	if ( ($terms<>"") ) {
-	$sql.="AND e.nid = b.entity_id ";
-	$sql.="AND (";
-	$sql.="e.title LIKE '%".$terms."%' ";
-	$sql.="OR b.body_value LIKE '%".$terms."%'  ";
-	$sql .=")";
-	}
-	
-	if ( ($format<>"") ) {
-	$sql.="AND e.nid = f.entity_id ";
-	}
-	
-	if ( ($sponsor<>"") ) {
-	$sql.="AND e.nid = u.entity_id ";
-	}
-	
-	if ( ($open_to<>"") ) {
-	$sql.="AND e.nid = t.entity_id ";
-	}
-	
-	if ( ($category<>"") ) {
-	$sql.="AND e.nid = c.entity_id ";
-	}
-	
-	if ( ($series<>"") ) {
-	$sql.="AND e.nid = s.entity_id ";
-	}
-	
-	if ( $events_date_start=="" ) { 
-	$sql.="AND d.field_event_date_value >= '".$today."' ";
-	}
-	
-	if ( ($events_date_start<>"") ) {
-	$sql.="AND d.field_event_date_value BETWEEN '".$date_range_start."' AND '".$date_range_end."' ";
-	}
-	
-	if ( ($format<>"") ) {
-	$sql.="AND f.field_event_format_value = '".$format."' ";	
-	}
-	
-	if ( ($sponsor<>"") ) {
-	$sql.="AND u.field_event_unit_value = '".$sponsor."' ";	
-	}
-	
-	if ( ($open_to<>"") ) {
-	$sql.="AND t.field_event_type_value = '".$open_to."' ";	
-	}
-	
-	if ( ($category<>"") ) {
-	$sql.="AND c.field_event_category_value = '".$category."' ";	
-	}
-	
-	if ( ($series<>"") ) {
-	$sql.="AND s.field_event_series_value = '".$series."' ";	
-	}
-	
-	if (($order=="TITLE_ASC") || ($order=="TITLE_DESC") ){
-		if (strpos($order, "ASC")){ $order = "ASC"; }
-		if (strpos($order, "DESC")){ $order = "DESC"; }
-	$sql.="ORDER BY e.title ".$order." ";
-	}
-	if (($order=="DATE_ASC") || ($order=="DATE_DESC") ){
-		if (strpos($order, "ASC")){ $order = "ASC"; }
-		if (strpos($order, "DESC")){ $order = "DESC"; }
-	$sql.="ORDER BY d.field_event_date_value ".$order." ";
-	}
-	
-	
-   //echo $sql; exit;
-	
-	return $sql;
-	
-}
-
-function search_results() {
-
-	
-	$conn = conn();
-
-	$sql = search_sql();
-	
-	$limit = get_limit();
-	
-	$page = get_page();
-	
-	$offset = (($page*$limit )-$limit);
-	
-	//echo $sql; exit;
-	
-	$result = $conn->query($sql);
-	
-
-	while (($row = $result->fetch_assoc()) !== NULL){			
-		$nids[] = $row['nid'];
-	}
-	//print_r($nids); exit;
-	$today = date("Y-m-d H:i:s");
-
-	if ($_POST["order"]<>""){
-	$order=$_POST["order"];
-	}
-	if ($_GET["order"]<>""){
-	$order=$_GET["order"];
-	}
-	if ($_POST["category"]<>""){
-	$category=$_POST["category"];
-	}
-	if ($_GET["category"]<>""){
-	$category=$_GET["category"];
-	}
-	$page=get_page();
-
-	if ($order=="")	{
-	$order="DATE_ASC";
-	}
-	if ($_POST["terms"]<>""){
-	$terms=$_POST["terms"];
-	}
-	if ($_GET["terms"]<>""){
-	$terms=$_GET["terms"];
-	}if ($_POST["events_date_start"]<>""){
-	$events_date_start=$_POST["events_date_start"];
-	}
-	if ($_GET["events_date_start"]<>""){
-	$events_date_start=$_GET["events_date_start"];
-	}
-	if ($_POST["events_date_end"]<>""){
-	$events_date_end=$_POST["events_date_end"];
-	}
-	if ($_GET["events_date_end"]<>""){
-	$events_date_end=$_GET["events_date_end"];
-	}
-	if (strpos($events_date_start, "/")){
-	$datearray = explode("/",$events_date_start);
-	$date_month = $datearray[0];
-	$date_day = $datearray[1];
-	$date_year = $datearray[2];
-	$events_date_start = $date_year."-".$date_month."-".$date_day;
-	}	
-	if (strpos($events_date_end, "/")){
-	$datearray = explode("/",$events_date_end);
-	$date_month = $datearray[0];
-	$date_day = $datearray[1];
-	$date_year = $datearray[2];
-	$events_date_end = $date_year."-".$date_month."-".$date_day;
-	}
-	
-	$date_range_start = $events_date_start .date(" 00:00");
-	$date_range_end = $events_date_end .date(" 23:59");
-	
-	if ($terms<>""){
-	$sql = "SELECT f.entity_id as nid FROM field_data_field_event_format f, field_data_field_event_date d ";
-		
-	$sql.="WHERE f.field_event_format_value LIKE '%".$terms."%' ";
-		
-	if ( $events_date_start=="" ) { 
-	$sql.="AND d.field_event_date_value >= '".$today."' ";
-	}
-
-	if ( ($events_date_start<>"") ) {
-	$sql.="AND d.field_event_date_value BETWEEN '".$date_range_start."' AND '".$date_range_end."' ";
-	}
-		
-	$sql.="AND f.entity_id = d.entity_id ";
-	
-	if (($order=="TITLE_ASC") || ($order=="TITLE_DESC") ){
-		if (strpos($order, "ASC")){ $order = "ASC"; }
-		if (strpos($order, "DESC")){ $order = "DESC"; }
-	$sql.="ORDER BY e.title ".$order." ";
-	}
-	if (($order=="DATE_ASC") || ($order=="DATE_DESC") ){
-		if (strpos($order, "ASC")){ $order = "ASC"; }
-		if (strpos($order, "DESC")){ $order = "DESC"; }
-	$sql.="ORDER BY d.field_event_date_value ".$order." ";
-	}
-
-		$result = $conn->query($sql);
-		while (($row = $result->fetch_assoc()) !== NULL){			
-			$nids[] = $row['nid'];
-		}
-	
-	/////////////////////////////////////////////////////////////////////////////
-		$sql = "SELECT f.entity_id as nid FROM field_data_field_event_unit f, field_data_field_event_date d ";
-
-		$sql.="WHERE f.field_event_unit_value LIKE '%".$terms."%' ";
-
-		if ( $events_date_start=="" ) { 
-		$sql.="AND d.field_event_date_value >= '".$today."' ";
-		}
-
-		if ( ($events_date_start<>"") ) {
-		$sql.="AND d.field_event_date_value BETWEEN '".$date_range_start."' AND '".$date_range_end."' ";
-		}
-
-		$sql.="AND f.entity_id = d.entity_id ";
-
-		if (($order=="TITLE_ASC") || ($order=="TITLE_DESC") ){
-		if (strpos($order, "ASC")){ $order = "ASC"; }
-		if (strpos($order, "DESC")){ $order = "DESC"; }
-		$sql.="ORDER BY e.title ".$order." ";
-		}
-		if (($order=="DATE_ASC") || ($order=="DATE_DESC") ){
-		if (strpos($order, "ASC")){ $order = "ASC"; }
-		if (strpos($order, "DESC")){ $order = "DESC"; }
-		$sql.="ORDER BY d.field_event_date_value ".$order." ";
-		}
-
-		$result = $conn->query($sql);
-		while (($row = $result->fetch_assoc()) !== NULL){			
-			$nids[] = $row['nid'];
-		}
-		
-//////////////////////////////////////////////////////////////////////////////////////////////////
-		$sql = "SELECT f.entity_id as nid FROM field_data_field_event_type f, field_data_field_event_date d ";
-
-		$sql.="WHERE f.field_event_type_value LIKE '%".$terms."%' ";
-
-		if ( $events_date_start=="" ) { 
-		$sql.="AND d.field_event_date_value >= '".$today."' ";
-		}
-
-		if ( ($events_date_start<>"") ) {
-		$sql.="AND d.field_event_date_value BETWEEN '".$date_range_start."' AND '".$date_range_end."' ";
-		}
-
-		$sql.="AND f.entity_id = d.entity_id ";
-
-		if (($order=="TITLE_ASC") || ($order=="TITLE_DESC") ){
-		if (strpos($order, "ASC")){ $order = "ASC"; }
-		if (strpos($order, "DESC")){ $order = "DESC"; }
-		$sql.="ORDER BY e.title ".$order." ";
-		}
-		if (($order=="DATE_ASC") || ($order=="DATE_DESC") ){
-		if (strpos($order, "ASC")){ $order = "ASC"; }
-		if (strpos($order, "DESC")){ $order = "DESC"; }
-		$sql.="ORDER BY d.field_event_date_value ".$order." ";
-		}
-
-		$result = $conn->query($sql);
-		while (($row = $result->fetch_assoc()) !== NULL){			
-			$nids[] = $row['nid'];
-		}
-	///////////////////////////////////////////////////////////////////////////////////////////
-			$sql = "SELECT f.entity_id as nid FROM field_data_field_event_category f, field_data_field_event_date d ";
-
-		$sql.="WHERE f.field_event_category_value LIKE '%".$terms."%' ";
-
-		if ( $events_date_start=="" ) { 
-		$sql.="AND d.field_event_date_value >= '".$today."' ";
-		}
-
-		if ( ($events_date_start<>"") ) {
-		$sql.="AND d.field_event_date_value BETWEEN '".$date_range_start."' AND '".$date_range_end."' ";
-		}
-
-		$sql.="AND f.entity_id = d.entity_id ";
-
-		if (($order=="TITLE_ASC") || ($order=="TITLE_DESC") ){
-		if (strpos($order, "ASC")){ $order = "ASC"; }
-		if (strpos($order, "DESC")){ $order = "DESC"; }
-		$sql.="ORDER BY e.title ".$order." ";
-		}
-		if (($order=="DATE_ASC") || ($order=="DATE_DESC") ){
-		if (strpos($order, "ASC")){ $order = "ASC"; }
-		if (strpos($order, "DESC")){ $order = "DESC"; }
-		$sql.="ORDER BY d.field_event_date_value ".$order." ";
-		}
-
-		$result = $conn->query($sql);
-		while (($row = $result->fetch_assoc()) !== NULL){			
-			$nids[] = $row['nid'];
-		}	///////////////////////////////////////////////////////////////////////////////////////////
-		$sql = "SELECT f.entity_id as nid FROM field_data_field_event_series f, field_data_field_event_date d ";
-
-		$sql.="WHERE f.field_event_series_value LIKE '%".$terms."%' ";
-
-		if ( $events_date_start=="" ) { 
-		$sql.="AND d.field_event_date_value >= '".$today."' ";
-		}
-
-		if ( ($events_date_start<>"") ) {
-		$sql.="AND d.field_event_date_value BETWEEN '".$date_range_start."' AND '".$date_range_end."' ";
-		}
-
-		$sql.="AND f.entity_id = d.entity_id ";
-
-		if (($order=="TITLE_ASC") || ($order=="TITLE_DESC") ){
-		if (strpos($order, "ASC")){ $order = "ASC"; }
-		if (strpos($order, "DESC")){ $order = "DESC"; }
-		$sql.="ORDER BY e.title ".$order." ";
-		}
-		if (($order=="DATE_ASC") || ($order=="DATE_DESC") ){
-		if (strpos($order, "ASC")){ $order = "ASC"; }
-		if (strpos($order, "DESC")){ $order = "DESC"; }
-		$sql.="ORDER BY d.field_event_date_value ".$order." ";
-		}
-
-		$result = $conn->query($sql);
-		while (($row = $result->fetch_assoc()) !== NULL){			
-			$nids[] = $row['nid'];
-		}
-////////////////////////////////////////////////////////////////////////////////////////////////
-		
-		
-}
-
-	$nids = array_keys(array_flip($nids));
-	
-	$offset = (($page*$limit)-$limit);	
-
-	
-	$paged_nids = array_slice($nids, $offset, $limit, preserve_keys );	
-	//$paged_nids = $nids;
-	
-	//print_r($nids);
-
-	if (count($paged_nids)>0){
-		foreach($paged_nids as $paged_nid){
-		$node = node_load($paged_nid);
-		$url = drupal_get_path_alias('node/'.$paged_nid);
-	    $datetime = $node->field_event_date[$node->language][0]['value'];
-	    $datetime2 = $node->field_event_date[$node->language][0]['value2'];
-		$timestamp = strtotime($datetime);
-		$timestamp2 = strtotime($datetime2);
-		$date = date('F j, Y',$timestamp);
-		$time = date('g:i A',$timestamp);
-		$time2 = date('g:i A',$timestamp2);
-?>
-		<div class="event">
-	<div class="event-image"><a href="<?php print $url; ?>"><img src="/sites/default/files/events/<?php print $node->field_events_image[$node->language][0]['filename']; ?>" alt="<?php print $node->field_events_image[und][0]['alt']; ?>"></a></div>
-	<div class="event-description">
-		<div class="event-title"><h3><a href="<?php print $url; ?>"><?php print $node->title; ?></a></h3></div>
-		<div class="event-summary"><?php print $node->body[$node->language][0]['safe_summary']; ?></div>
-	</div>
-	
-	<div class="event-date-time">
-		<span class="event-date"><?php echo $date; ?></span>
-		<span class="event-time"><?php echo $time; ?>-<?php echo $time2; ?></span>
-	</div>
-	</div>
-
-	<?php	}
-	} 
-
-	if (count($nids)==0){
-		echo '<div id="no_results">There are no results to your search. To increase your results,  remove keywords or filters.</div>';
-	} 
-	
-}
-
-function row_count() {
-	$conn = conn();
-	$sql = search_sql();
-
-	$result = $conn->query($sql);
-	while (($row = $result->fetch_assoc()) !== NULL){			
-		$nids[] = $row['nid'];
-	}
-	return count($nids);
-}
-
-function search_count() {
-	$conn = conn();
-	$sql = search_sql();
-	$today = date("Y-m-d H:i:s");
-
-	$result = $conn->query($sql);
-	while (($row = $result->fetch_assoc()) !== NULL){			
-		$nids[] = $row['nid'];
-	}
-//echo count($nids)."<BR>";
-	
-    if ($_POST["terms"]<>""){
-	$terms=$_POST["terms"];
-	}
-	if ($_GET["terms"]<>""){
-	$terms=$_GET["terms"];
-	}if ($_POST["events_date_start"]<>""){
-	$events_date_start=$_POST["events_date_start"];
-	}
-	if ($_GET["events_date_start"]<>""){
-	$events_date_start=$_GET["events_date_start"];
-	}
-	if ($_POST["events_date_end"]<>""){
-	$events_date_end=$_POST["events_date_end"];
-	}
-	if ($_GET["events_date_end"]<>""){
-	$events_date_end=$_GET["events_date_end"];
-	}
-	if (strpos($events_date_start, "/")){
-	$datearray = explode("/",$events_date_start);
-	$date_month = $datearray[0];
-	$date_day = $datearray[1];
-	$date_year = $datearray[2];
-	$events_date_start = $date_year."-".$date_month."-".$date_day;
-	}	
-	if (strpos($events_date_end, "/")){
-	$datearray = explode("/",$events_date_end);
-	$date_month = $datearray[0];
-	$date_day = $datearray[1];
-	$date_year = $datearray[2];
-	$events_date_end = $date_year."-".$date_month."-".$date_day;
-	}
-	
-	$date_range_start = $events_date_start .date(" 00:00");
-	$date_range_end = $events_date_end .date(" 23:59");
-	
-	if ($terms<>""){
-		
-	$sql = "SELECT f.entity_id as nid FROM field_data_field_event_format f, field_data_field_event_date d ";
-		
-	$sql.="WHERE f.field_event_format_value LIKE '%".$terms."%' ";
-		
-	if ( $events_date_start=="" ) { 
-	$sql.="AND d.field_event_date_value >= '".$today."' ";
-	}
-
-	if ( ($events_date_start<>"") ) {
-	$sql.="AND d.field_event_date_value BETWEEN '".$date_range_start."' AND '".$date_range_end."' ";
-	}
-		
-	$sql.="AND f.entity_id = d.entity_id ";
-	
-		$result = $conn->query($sql);
-		while (($row = $result->fetch_assoc()) !== NULL){			
-			$nids[] = $row['nid'];
-		}
-	//echo count($nids)."<BR>";
-	
-	/////////////////////////////////////////////////////////////////////////////
-		$sql = "SELECT f.entity_id as nid FROM field_data_field_event_unit f, field_data_field_event_date d ";
-
-		$sql.="WHERE f.field_event_unit_value LIKE '%".$terms."%' ";
-
-		if ( $events_date_start=="" ) { 
-		$sql.="AND d.field_event_date_value >= '".$today."' ";
-		}
-
-		if ( ($events_date_start<>"") ) {
-		$sql.="AND d.field_event_date_value BETWEEN '".$date_range_start."' AND '".$date_range_end."' ";
-		}
-
-		$sql.="AND f.entity_id = d.entity_id ";
-
-		$result = $conn->query($sql);
-		while (($row = $result->fetch_assoc()) !== NULL){			
-			$nids[] = $row['nid'];
-		}
-	//echo count($nids)."<BR>";
-	
-//////////////////////////////////////////////////////////////////////////////////////////////////
-		$sql = "SELECT f.entity_id as nid FROM field_data_field_event_type f, field_data_field_event_date d ";
-
-		$sql.="WHERE f.field_event_type_value LIKE '%".$terms."%' ";
-
-		if ( $events_date_start=="" ) { 
-		$sql.="AND d.field_event_date_value >= '".$today."' ";
-		}
-
-		if ( ($events_date_start<>"") ) {
-		$sql.="AND d.field_event_date_value BETWEEN '".$date_range_start."' AND '".$date_range_end."' ";
-		}
-
-		$sql.="AND f.entity_id = d.entity_id ";
-
-		$result = $conn->query($sql);
-		while (($row = $result->fetch_assoc()) !== NULL){			
-			$nids[] = $row['nid'];
-		}
-	//echo count($nids)."<BR>";
-
-	///////////////////////////////////////////////////////////////////////////////////////////
-			$sql = "SELECT f.entity_id as nid FROM field_data_field_event_category f, field_data_field_event_date d ";
-
-		$sql.="WHERE f.field_event_category_value LIKE '%".$terms."%' ";
-
-		if ( $events_date_start=="" ) { 
-		$sql.="AND d.field_event_date_value >= '".$today."' ";
-		}
-
-		if ( ($events_date_start<>"") ) {
-		$sql.="AND d.field_event_date_value BETWEEN '".$date_range_start."' AND '".$date_range_end."' ";
-		}
-
-		$sql.="AND f.entity_id = d.entity_id ";
-
-
-		$result = $conn->query($sql);
-		while (($row = $result->fetch_assoc()) !== NULL){			
-			$nids[] = $row['nid'];
-		}
-	//echo count($nids)."<BR>";
-///////////////////////////////////////////////////////////////////////////////////////////
-		$sql = "SELECT f.entity_id as nid FROM field_data_field_event_series f, field_data_field_event_date d ";
-
-		$sql.="WHERE f.field_event_series_value LIKE '%".$terms."%' ";
-
-		if ( $events_date_start=="" ) { 
-		$sql.="AND d.field_event_date_value >= '".$today."' ";
-		}
-
-		if ( ($events_date_start<>"") ) {
-		$sql.="AND d.field_event_date_value BETWEEN '".$date_range_start."' AND '".$date_range_end."' ";
-		}
-
-		$sql.="AND f.entity_id = d.entity_id ";
-
-		$result = $conn->query($sql);
-		while (($row = $result->fetch_assoc()) !== NULL){			
-			$nids[] = $row['nid'];
-		}
-	//echo count($nids)."<BR>";
-////////////////////////////////////////////////////////////////////////////////////////////////
-		
-		
-}
-
-	$nids = array_keys(array_flip($nids));
-	return count($nids);
-}
-
-function search_pager(){
-	$conn = conn();
-	$sql = search_sql();
-	$total = search_count();
-	$limit = get_limit();
-	$page = get_page();
-	$pages = get_pages();
-	$partial = get_partial_pages();
-	$offset = (($page*$limit )-$limit);
-	$sql.="LIMIT ".$limit." OFFSET ".$offset." ";
-	
-	$result = $conn->query($sql);
-	while (($row = $result->fetch_assoc()) !== NULL){			
-		$nids[] = $row['nid'];
-	}
-	$count = count($nids);
-	$floor = ($offset+1);
-	
-	if ($partial===true){
-		$pages = ($pages+1);
-	}
-	
-	if ($page==1){
-		$current = 1;
-	}
-	
-	if ($page<>1){
-		$current = ($offset+1);
-	}
-
-	if ($pages==$page){
-	return ($current) ." to ". ($total);
-	}
-	if ($pages<>$page){
-	return ($current) ." to ". ($limit*$page);
-	}
-	echo "<BR>";
-
-
-}
-
-function list_count($fieldname,$field) {
-
-$today = date("Y-m-d H:i:s");	
 $query = new EntityFieldQuery();
 $query->entityCondition('entity_type', 'node')
-  ->entityCondition('bundle', 'events')
+  ->entityCondition('bundle', 'venue')
   ->propertyCondition('status', NODE_PUBLISHED)
-  ->fieldCondition($fieldname, 'value', $field, '=')
-  ->fieldCondition('field_event_date', 'value', $today, '>=')
+  ->addMetaData('account', user_load(1)); // Run the query as user 1.
+$result = $query->execute();
+if (isset($result['node'])) {
+  $venue_nids = array_keys($result['node']);
+}
+	
+foreach ($venue_nids as $venue_nid){
+	
+	$new_revision = node_load($venue_nid);
+	$new_revision->field_refreshed_events[und][0]['value'] = "No";
+	try{
+	  // Save the new revision first
+	node_save($new_revision);
+		drupal_goto('<front>');
+		drupal_set_message("All Venue Refreshed Events Set to NO");
+	}
+
+	catch (Exception $e) {
+		drupal_goto('<front>');
+		drupal_set_message("There was an error setting Refreshed to No " . $e);
+	}
+  
+	
+}
+	
+}
+function events_list_events_callback() { ?>
+<a href="https://www.collectiveradio.com/events/events_to_ingest">Get Events</a>
+<?php }
+	
+function get_fp_events_carousel_items(){
+$date_start = strtotime(date("Y-m-d")." 00:00:00");
+$date_end = strtotime('+1 week');
+
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'event')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->fieldCondition('field_date', 'value', $date_start, '>')
+  ->fieldCondition('field_date', 'value', $date_end, '<')
+  ->addTag('random')
+  ->range(0, 3)
+  ->addMetaData('account', user_load(1)); // Run the query as user 1.
+$result = $query->execute();
+if (isset($result['node'])) {
+  $event_nids = array_keys($result['node']);
+}
+
+$y=0;
+print '
+<!-- Indicators -->
+  <ol class="carousel-indicators">
+';
+  
+foreach($event_nids as $_nid){ ?>
+<li data-target="#myCarousel" data-slide-to="<?php echo $y; ?>" class="<?php if ($y===0) echo 'active'; ?>"></li>
+<?php $y++; } 
+
+print '
+</ol>
+<div class="carousel-inner" role="listbox">
+';  
+
+
+$i=0;
+foreach($event_nids as $_nid){
+$event = node_load($_nid);
+$event = objectToArray($event);
+	//print_r($event); exit;
+$url = "https://www.collectiveradio.com/".drupal_get_path_alias('node/'.$_nid.'');
+$title = $event['title'];
+$date = date("M j Y g:i A",$event['field_date']['und'][0]['value']);
+$image = "https://www.collectiveradio.com/sites/default/files/".$event['field_image']['und'][0]['filename'];
+$cover = "https://www.collectiveradio.com/sites/default/files/".$event['field_cover']['und'][0]['filename'];
+switch($i){
+case "0":
+$slide = "first";
+break;
+case "1":
+$slide = "second";
+break;
+case "2":
+$slide = "third";
+break;
+}
+?>
+<div class="item <?php if ($i===0) echo 'active'; ?>">
+  <img class="<?php echo $slide; ?>-slide img-responsive" src="<?php echo $cover; ?>" alt="<?php echo $title; ?>">
+	<div class="carousel-caption" style="z-index:100;">
+	  <h2 style="background-color:#ffffff;opacity:.5;width:100%;"><a href="<?php echo $url; ?>"><font color="#990000;"><?php echo $title; ?><BR><?php echo $date; ?></font></a></h2>
+  </div>
+</div>
+<?php
+$i++; }	
+?>
+
+<?php }
+
+function events_get_refreshed_events(){
+	
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  //->entityCondition('bundle', array('artist','venue'), 'IN')
+  ->entityCondition('bundle', 'venue', '=')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->fieldCondition('field_refreshed_events', 'value', 'No', '=')
+  ->range(0, 1)
+  // Run the query as user 1.
+  ->addMetaData('account', user_load(1));
+
+$result = $query->execute();
+if (isset($result['node'])) {
+  $eventID = array_keys($result['node']);
+} 
+$nodeID = $eventID[0];
+
+
+if ($nodeID<>""){
+$destination = 'https://www.collectiveradio.com/events/ingest_events?nodeID='.$nodeID.'';
+} else {   
+$destination = 'https://www.collectiveradio.com/';
+}
+
+echo '
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Get List of Pages to Refresh</title>
+</head>
+
+<body onload="document.formtopost.submit()">
+<form action="'.$destination.'" method="post" id="formtopost" name="formtopost"></form>
+</body>
+</html>';	
+}
+
+function events_ingest_events(){
+	
+	
+$node = node_load($_REQUEST['nodeID']);
+$node = (objectToArray($node));
+
+$referring_node_type = $node['type'];
+
+$nodeID = $node['nid'];
+
+
+//print_r($node); exit;
+
+$pageID = $node['field_facebook_id'][und][0]['value'];
+
+$token = get_facebook_settings_default();
+
+$data_base = 'https://graph.facebook.com/v2.8/'.$pageID.'/events?fields=id&access_token=';
+if ($_REQUEST['after']==""){
+$url = $data_base.$token;
+} else {
+$url = $data_base.$token.'&after='.$_REQUEST['after'].'';
+}
+
+$facebookEvents = file_get_contents($url);
+$eventsArray = drupal_json_decode($facebookEvents);
+$data = $eventsArray['data'];
+$paging = $eventsArray['paging'];
+
+
+//here comes the pain!
+foreach($data as $key1 => $value1){
+$url = 'https://graph.facebook.com/v2.8/'.$value1['id'].'?access_token='.$token;
+$contents = file_get_contents( $url );
+if( $contents ){
+$data = json_decode( $contents, true );
+$_description = $data[description];
+$_eventID = $data[id];
+$_end_time = strtotime($data[end_time]);
+$_start_time = strtotime($data[start_time]);
+$_title = $data[name];
+$_placeName = $data[place][name];
+$_placeID = $data[place][id];
+$_locationstreet = $data[place][location][street];
+$_locationcity = $data[place][location][city];
+$_locationstate = $data[place][location][state];
+$_locationzip = $data[place][location][zip];
+$_locationcountry = $data[place][location][country];
+}
+
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'event')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->fieldCondition('field_facebook_event_id', 'value', $_eventID, '=')
+  // Run the query as user 1.
+  ->addMetaData('account', user_load(1));
+
+$result = $query->execute();
+	
+if (!isset($result['node'])) {
+	if ($_start_time>time()){ //if the event is in the future
+	
+//access the cover file, save it temporarily to a variable
+$remote_cover = 'https://graph.facebook.com/v2.8/'.$value1['id'].'?fields=cover&access_token='.$token;
+$remote_cover = file_get_contents( $remote_cover );
+
+if( $remote_cover ){
+$rawdata = json_decode( $remote_cover, true );
+$pic_cover = $rawdata[cover][source]; //now the raw data can be put into an <img src=$rawdata>
+}
+
+//echo '<img src='.$pic_cover.' />'; exit;
+
+if ($pic_cover){
+//get the cover file copied and saved locally
+$new_pic_cover = $_SERVER['DOCUMENT_ROOT']."/uploads/".(time()+rand(1,250)).".jpg"; //set the name and destination of the incoming image
+copy($pic_cover,$new_pic_cover); //copy from remote source to local file, $new_pic_cover  
+// Create image File object and associate with cover field.
+$file = new StdClass();
+$file->uid = 1;
+$file->uri = $new_pic_cover; //this is the new image file we just downloaded and saved
+$file->filemime = file_get_mimetype($file->uri);
+$file->status = 1;
+$file->alt = $_title;
+$file->title = $_title;
+$file->display = 1;
+$file->description = "";  
+$dest = 'public://';
+$cover = file_copy($file, $dest);
+unlink($new_pic_cover); //destroy the $new_pic_cover;
+}
+//now get the picture file saved locally
+
+$remote_picture = 'https://graph.facebook.com/v2.8/'.$value1['id'].'/picture?type=large&access_token='.$token;
+
+if ($remote_picture){
+$local_picture = $_SERVER['DOCUMENT_ROOT']."/uploads/".(time()+rand(1,250)).".jpg";
+copy($remote_picture,$local_picture);
+
+	// Create image File object and associate with image field.
+	$file = new StdClass();
+	$file->uid = 1;
+	$file->uri = $local_picture; //this is the new image file we just downloaded and saved
+	$file->filemime = file_get_mimetype($file->uri);
+	$file->alt = $_title;
+    $file->title = $_title;
+	$file->status = 1;
+	$file->display = 1;
+	$file->description = "";  
+	$dest = 'public://';
+	$image = file_copy($file, $dest);
+  unlink($local_picture); //destroy the $local_picture;
+
+}
+
+  $event = new stdClass();
+  $event->title = $_title;
+  $event->type = "event";
+  node_object_prepare($event); // Sets some defaults. Invokes hook_prepare() and hook_node_prepare().
+  $event->language = LANGUAGE_NONE; // Or e.g. 'en' if locale is enabled
+  $event->body[$event->language][0]['format'] = 'full_html';
+  $event->body[$event->language][0]['summary'] = text_summary($_description);
+  $event->body[$event->language][0]['value'] = $_description;
+  $event->uid = 1; 
+  $event->status = 1; //(1 or 0): published or not
+  $event->promote = 0; //(1 or 0): promoted to front page
+  $event->comment = 0; // 0 = comments disabled, 1 = read only, 2 = read/write
+  $event->field_venue_reference[$event->language][0]['target_id'] = $nodeID; $event->field_facebook_event_id[$event->language][0]['value'] = $_eventID;
+  $event->field_date[$event->language][0]['value'] = $_start_time;
+  $event->field_cover[$event->language][0] = (array)$cover;
+  $event->field_image[$event->language][0] = (array)$image;
+
+	//now perform the save
+
+	try {
+		
+		  $event = node_submit($event); // Prepare node for saving
+		  node_save($event); //save node
+		  $success = TRUE;
+		  
+	}
+
+	catch (Exception $e) {
+	  // Do your error handling here.
+	}
+
+   }//if ($_start_time>time()){
+  }//if (!isset($result['node'])) {
+
+} /// end foreach
+$after=$paging['cursors']['after'];
+//https://graph.facebook.com/v2.8/448025055499/events?access_token=987733174652726|2c3e415ea23bf08316d4cd36cefa39b4&fields=id&limit=25&after='.$after
+
+if ($after<>""){
+$destination = 'https://www.collectiveradio.com/events/ingest_events?after='.$after.'&nodeID='.$nodeID.'';
+} else { 
+
+  $new_revision = node_load($nodeID);
+  $new_revision->field_refreshed_events[und][0]['value'] = "Yes";
+
+  // Save the new revision first
+  node_save($new_revision);
+  
+$destination = 'https://www.collectiveradio.com/events/events_to_ingest';
+}
+
+echo '
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>'.$after.'</title>
+</head>
+
+<body onload="document.formtopost.submit()">
+<form action="'.$destination.'" method="post" id="formtopost" name="formtopost"></form>
+</body>
+</html>';	
+}
+
+function events_get_events_count(){
+	
+$date = date("Y-m-d")." 00:00:00";
+
+
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'event')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->fieldCondition('field_date', 'value', $date, '>=')
+  ->fieldOrderBy('field_date', 'value', 'ASC')
+  //->range(0, 8)
   // Run the query as user 1.
   ->addMetaData('account', user_load(1));
 
 $result = $query->execute();
 if (isset($result['node'])) {
   $nids = array_keys($result['node']);
-} 
+}
+
 	return count($nids);
+
 }
 
-function array_sort_by_column_asc(&$arr, $col, $dir = SORT_ASC) {
-    $sort_col = array();
-    foreach ($arr as $key=> $row) {
-        $sort_col[$key] = $row[$col];
-    }
-
-    array_multisort($sort_col, $dir, $arr);
-}
-
-function array_sort_by_column_desc(&$arr, $col, $dir = SORT_DESC) {
-    $sort_col = array();
-    foreach ($arr as $key=> $row) {
-        $sort_col[$key] = $row[$col];
-    }
-
-    array_multisort($sort_col, $dir, $arr);
-}
-
-
-function block_format($header,$path,$field_name) {
-//$path = "events";
-//echo $string;
-	//if ($field_name[0]<>"") echo $field_name[0];exit;
-	$thenewcount=0;
-	$h3 = $header;
-	if ($h3=="Sponsor"){
-		$h3 = "Program";
-	}
-
-$output = field_info_field($field_name[0]);
-
-	$list = array();
-
-	foreach($output[settings][allowed_values] as $key => $value){
-		//$thepath = '<a href="/events?highlight='.$key.'&'.$arg1.'='.$key.'">'.$value.'</a>';
-		$thepath = $value;
-		$count = list_count($field_name[0],$key);
-		$list[]= array("value"=>$value,"thepath"=>$thepath,"count"=>$count,"key"=>$key);
-		if ($count>0){
-			$thenewcount = ($thenewcount+1);
-		}
-	}
+function events_get_front_page_events_items($page){
 	
-	if ($thenewcount>0){
-   array_sort_by_column_desc($list, 'count');
-	echo '<div class="field_block" id="field_block_'.str_replace(" ","_",strtolower($header)).'" data-id="'.str_replace(" ","_",strtolower($header)).'">';
-	echo "<h3>".$h3."</h3>";
-	echo "<ul>";
+$date = strtotime(date("Y-m-d")." 00:00:00");
+
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'event')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->fieldCondition('field_date', 'value', $date, '>=')
+  ->fieldOrderBy('field_date', 'value', 'ASC')
+  ->range(0, 21)
+  // Run the query as user 1.
+  ->addMetaData('account', user_load(1));
+
+$result = $query->execute();
+if (isset($result['node'])) {
+  $nids = array_keys($result['node']);
+}
+
+return $nids;
+
+}
+
+
+
+
+function events_get_event($nid){
+
+$event = objectToArray(node_load($nid));
+$url = drupal_get_path_alias('node/'.$nid.'');
+$timezone = date("e", $event['field_date'][und][0]['value']);
 	
-	if ((count($list)-1)<4){
-		$thecount = (count($list)-1);
-	} else {
-		$thecount = 4;
-	}
+$event = objectToArray(node_load($nid));
+$url = drupal_get_path_alias('node/'.$nid.'');
+$price = $event['field_price'][und][0]['value'];
+$ticketID = $event['field_event_ticket'][und][0]['target_id'];
+$editURL = "<p><a href='/node/".$nid."/edit'>Edit Event</a></p>";
+	
+$ticket = get_node($ticketID); 
+$price = $ticket['sell_price'];
+$price = number_format($price, 2, '.', '');
+	
+	switch($timezone){
+
+	case "America/New_York":
+        $tz = "EST";
+    break;
+	case "America/Chicago":
+        $tz = "CST";
+    break;
+	case "America/Los_Angeles":
+        $tz = "PST";
+    break;
 		
-		for ($i = 0; $i <= $thecount; $i++) {
-			if ($list[$i]['count']>0){
-			print '<li class="filter_'.str_replace(" ","_",strtolower($header)).'" data-id="'.str_replace(" ","_",strtolower($header)).'" data-value1="'.$list[$i]['key'].'" data-value2="'.$list[$i]['value'].'" style="cursor:pointer;">';
-			print '<span class="filter-count">';
-			print( $list[$i]['count'] );
-			print "</span> " ;
-			print( $list[$i]['thepath'] );
-			print "</li>";
-			$newcount = ($newcount + 1);
-			}
-		}
+}	
+$thedate = date("Y-m-d g:ia", $event['field_date'][und][0]['value'])." ".$tz;
+?>
+
+<div class="well" style="height:500px;">
+<a href="<?php echo $url; ?>"><img alt="<?php echo $event['title'];?>"  src="https://www.collectiveradio.com/sites/default/files/<?php echo $event['field_image'][und][0]['filename'];?>" alt="<?php echo $event['title'];?>" title="<?php echo $event['title'];?>" /></a>
+<div class="info">
+<p class="title"><a href="<?php echo $url; ?>"><?php echo $event['title'];?></a></p>
+<p class="date"><?php echo $thedate; ?></p>
+
+<?php if ($ticketID<>""){ ?>
+<?php print '<a href="/cart/add/p'.$ticketID.'_q1?destination=cart">Add to Cart</a>'; ?><BR>
+<?php echo '$'.$price; ?>
+<?php } ?>
+
+<?php if (is_admin()){ echo $editURL; } ?>	
+
+</div>
+<?php get_social_share_buttons($nid); ?>
+
+</div>
+<?php }
+
+function delete_events(){
+	$node_type = 'event';
+
+	// Select the nodes that we want to delete.
+	$result = db_select('node', 'n')
+			  ->fields('n', array('nid'))
+			  ->condition('type', $node_type, '=')
+			  ->execute();
+
+	$deleted_count = 0;
+	foreach ($result as $record) {
+	  node_delete($record->nid);
+	  $deleted_count++;
+	}
+// Simple debug message so we can see what had been deleted.
+drush_print("$deleted_count nodes have been deleted");
+}
+
+function get_remaining_seconds(){
+// this get the timestamp for the top of next hour
+//then it gets the current timestamp
+//finally it subtracts now from then and gets us
+//the number of seconds until the top of next hour
+$top_of_the_hour = strtotime(date("Y-m-d G:59:59", time()));
+$top_of_the_hour = ($top_of_the_hour+1);
+$seconds_now = time();
+$remaining_seconds = ($top_of_the_hour-$seconds_now);
+echo $remaining_seconds;
+}
+
+function events_get_front_page_events(){
+	$fp_nids=events_get_front_page_events_items();
+
+$count = (count($fp_nids)/3);
+for ($page = 1; $page <= $count; $page++) { 
+	
+	$limit = 3;	
+	$nids = array_keys(array_flip($fp_nids));	
+	$offset = (($page*$limit)-$limit);
+	$paged_nids = array_values(array_slice($fp_nids, $offset, $limit, preserve_keys ));
+?>
+<div class="therow" width="100%">
+<?php for ($x = 0; $x <= 2; $x++) { ?>
+<div class="column">
+	<?php events_get_event($paged_nids[$x]); ?>
+</div>
+<?php } ?>
+</div>
+
+<?php }
+}
+
+function get_front_page_hero(){ ?>
+<div id="hero">
+	<div id="myCarousel" class="carousel slide" data-ride="carousel">
+	<?php get_fp_events_carousel_items(); ?>
+	</div>
+</div>
+<?php }
+
+function search_events(){
+	
+$date = strtotime(date("Y-m-d")." 00:00:00");
+$datetoday = strtotime(date("Y-m-d")." 23:59:59");
+$datetomorrow1 = strtotime(date('Y-m-d ', strtotime('+1 day', $date))." 00:00:00");
+$datetomorrow2 = strtotime(date('Y-m-d ', strtotime('+1 day', $date))." 23:59:59");
+
+$dow = date('N');
+$monday = strtotime(date('Y-m-d', strtotime('-'.($dow-1).' days'))." 00:00:00");
+$sunday = strtotime(date('Y-m-d', strtotime('+'.(7-$dow).' days'))." 23:59:59");
+$saturday = strtotime(date('Y-m-d', strtotime('-1 day', $sunday))." 00:00:00");
+	
+$dom = date('j');
+$days = date('t');
+$first = strtotime(date('Y-m-d', strtotime('-'.($dom-1).' days'))." 00:00:00");
+$last = strtotime(date('Y-m-d', strtotime('+'.($days-$dom).' days'))." 23:59:59");
+
+$title = $_POST['title'];
+$dateterm = ($_POST["dateterm"]);
+$date_start = $_POST['date_start'];
+$date_end = $_POST['date_end'];
+	
+//print_r($_POST); //exit;
+	
+//echo "monday=".($monday)."<BR>";
+//echo "saturday=".($saturday)."<BR>";
+//echo "sunday=".($sunday)."<BR>";
+//echo "first=".($first)."<BR>";
+//echo "last=".($last)."<BR>";
+
+if ($date_start<>"") {
+$datearray = explode("/",$date_start);
+$date_month = $datearray[0];
+$date_day = $datearray[1];
+$date_year = $datearray[2];
+$date_start1 = strtotime($date_year."-".$date_month."-".$date_day." 00:00:00");
+$date_start2 = strtotime($date_year."-".$date_month."-".$date_day." 23:59:59");
+}
+
+if ($date_end<>"") {
+$datearray = explode("/",$date_end);
+$date_month = $datearray[0];
+$date_day = $datearray[1];
+$date_year = $datearray[2];
+$date_end = strtotime($date_year."-".$date_month."-".$date_day." 23:59:59");
+}
+	
+$conn = conn();
+
+$sql.="SELECT DISTINCT(e.nid) FROM node e, field_data_field_date d ";
+$sql.="WHERE e.nid = d.entity_id ";
+	
+if ($date_start1==""){
+	switch($dateterm){
+
+		case "today":
+		$sql.="AND d.field_date_value BETWEEN '".$date."' AND '".$datetoday."' ";
+		break;
+
+		case "tomorrow":
+		$sql.="AND d.field_date_value BETWEEN '".$datetomorrow1."' AND '".$datetomorrow2."' ";
+		break;
+
+		case "week":
+		$sql.="AND d.field_date_value BETWEEN '".$monday."' AND '".$sunday."' ";
+		break;
+
+		case "weekend":
+		$sql.="AND d.field_date_value BETWEEN '".$saturday."' AND '".$sunday."' ";
+		break;
+
+		case "month":
+		$sql.="AND d.field_date_value BETWEEN '".$first."' AND '".$last."' ";
+		break;
+
+		default:
+		$sql.="AND d.field_date_value >= '".$date."' ";
+		break;
+
+	}
+}
+	
+if ( ($date_start1<>"") && ($date_end=="") ){
+$sql.="AND d.field_date_value BETWEEN '".$date_start1."' AND '".$date_start2."' ";
+}
+	
+if ( ($date_start1<>"") && ($date_end<>"") ){
+$sql.="AND d.field_date_value BETWEEN '".$date_start1."' AND '".$date_end."' ";
+}
+	
+if ($title<>""){
+$sql.="AND e.title LIKE '%".$title."%' ";
+}
+	
+$sql.="ORDER BY d.field_date_value ASC ";
+
+
+$result = $conn->query($sql);
+
+while (($row = $result->fetch_assoc()) !== NULL){			
+	$nids[] = $row['nid'];
+}
+	//print_r($nids);
+//echo $sql;	
+	
+foreach($nids as $nid){
+	formatted_event($nid);	
+}
+	
+if (count($nids)==0){ ?>
+	
+<div id="no_results">There are no results to your search</div>
+
+
+<?php }
+	
+}
+
+function formatted_event($nid){
+$url = drupal_get_path_alias('node/'.$nid.'');
+$event = objectToArray(node_load($nid));
+$url = drupal_get_path_alias('node/'.$nid.'');
+$timezone = date("e", $event['field_date'][und][0]['value']);
+$is_ticket = $event['field_is_ticket'][und][0]['value'];
+$ticketID = $event['field_event_ticket'][und][0]['target_id'];
+$editURL = "<p><a href='/node/".$nid."/edit'>Edit Event</a></p>";
+	
+$ticket = get_node($ticketID); 
+$price = $ticket['sell_price'];
+$price = number_format($price, 2, '.', '');
+
+$eventID = $event['nid'];
+
+switch($timezone){
+
+	case "America/New_York":
+        $tz = "EST";
+    break;
+	case "America/Chicago":
+        $tz = "CST";
+    break;
+	case "America/Los_Angeles":
+        $tz = "PST";
+    break;
 		
-	if ((count($list)-1)>4){
-
-	echo '<div class="items_to_hide" style="display:none;">';
-		for ($i = 5; $i <= (count($list)-1); $i++) {
-		    	if ($list[$i]['count']>=1){
-			print '<li class="filter_'.str_replace(" ","_",strtolower($header)).'" data-id="'.str_replace(" ","_",strtolower($header)).'" data-value1="'.$list[$i]['key'].'" data-value2="'.$list[$i]['value'].'" style="cursor:pointer;"><span class="filter-count">'  ;
-			print( $list[$i]['count'] ) ;
-			print "</span> " ;
-			print( $list[$i]['thepath'] );
-			print "</li>";
-			$newcount = ($newcount + 1);
-				}
-			}
-		echo '</div>';
-		
-	echo "</ul>";
-	}
+}	
+$thedate = date("Y-m-d g:ia", $event['field_date'][und][0]['value'])." ".$tz;
+?>
 	
-	if ($newcount>5){
-	echo '<div class="show_more" style="cursor:pointer;">Show More</div>';
-	echo '<div class="show_fewer" style="display:none;cursor:pointer;">Show Fewer</div>';
-	}
-	
-    echo '</div>';
-}
-		$thenewcount=0;
-}
-
-function get_field_names($fields,$fieldname){
-	
-	$list_of_field_names = array();
-	
-	foreach($fields as $field_name){
-
-	$output = field_info_field($field_name);
-
-		foreach($output[settings][allowed_values] as $key => $value){
-			$list_of_field_names[]=array("key"=>$key,"value"=>$value);
-		}
-	}
-	
-	sort($list_of_field_names);
-
-		foreach($list_of_field_names as $key => $value){
-			echo '<option value="'.$value['key'].'" ';
-			if ($fieldname==$value['key']) echo "selected";
-			echo '>'.$value['value'].'</option>';
-		}
-
-}
-
-function get_rooms($rooms,$room){
-	
-	$list_of_rooms = array();
-	
-	$output = field_info_field($rooms);
-//print_r($output); exit;
-		foreach($output[settings][allowed_values] as $key => $value){
-			$list_of_rooms[]=array("key"=>$key,"value"=>$value);
-		}
-	//print_r($list_of_rooms); exit;
-        foreach($list_of_rooms as $key => $value){
-		echo '<option id="'.$room.'" value="'.$value['key'].'"';
-		if ($room==$value['key']) echo " selected "; 
-		echo '>'.$value['value'].'</option>';
-		}
-}
-function get_pages(){
-	$limit = get_limit();
-	$total = search_count();
-	//return the number of full or partial pages of results
-	$number = ($total/$limit);
-	if(floor($number) == $number){
-		return floor($number);
-	} else{
-		return floor($number+1);
-	}
-}
-
-function get_page(){
-$page=$_POST["page"];
-if ($page=="")	{
-	$page="1";
-	}
-return $page;
-}
-
-function get_limit(){
-	$limit = 15;
-	return $limit;
-}
-function search_pagination(){
-$page = get_page();
-$pages = get_pages();
-
-	//return $pages; exit;
-echo "<div>";
-	
-	if (($page==1)&&($pages>1)){
-		get_pages_list($pages,$page);
-		echo '<button id="next" value="">Next</button>';
-	}
-	if (($page<>1)&&($pages>1)&&($page<>$pages)) {
-        echo '<button id="previous" value="">Previous</button>';
-		get_pages_list($pages,$page);
-		echo '<button id="next" value="">Next</button>';
-	}
-	if (($page==$pages)&&($page>1)){
-		echo '<button id="previous" value="">Previous</button>';
-		get_pages_list($pages,$page);
-	}		
-	
-echo "</div>";
-
-}
-
-function get_pages_list($pages,$page){
-	echo "<ul class='page_numbers'>";
-	for ($x = 1; $x <= $pages; $x++) {
-		if ($x==$page){
-			echo "<li class='active_page' data-value='".$x."'>".$x."</li> ";
-		}
-		if ($x!=$page){
-			echo "<li class='' data-value='".$x."'>".$x."</li> ";
-		}
-	}
-	echo "</ul>";
-}
-
-function build_url(){
-$string = "/events";
-$string .= "?order=".$_POST['order'];
-$string .= "&format=".$_POST['format'];
-$string .= "&open_to=".$_POST['open_to'];
-$string .= "&series=".$_POST['series'];
-$string .= "&category=".$_POST['category'];
-$string .= "&sponsor=".$_POST['sponsor'];
-$string .= "&events_date_start=".$_POST['events_date_start'];
-$string .= "&events_date_end=".$_POST['events_date_end'];
-$string .= "&terms=".$_POST['terms'];
-$string .= "&page=".$_POST['page'];
-
-	echo $string;
-	
-}
-
-function events_send_email(){
-	
-	//print_r($_POST['url']);
-	
-	$to = $_POST['email'];
-	$subject = "Events Results";
-	$message = "Hello, Someone has sent you the results of an events search on GWU Library Website. ";
-	$message .= $_POST['url'];
-	
-	if (events_mail($from = 'default_from', $to, $subject, $message)){
-	echo "Thanks For Sharing Your Results!";
-	} else {
-    echo "There Was A Problem Sharing Your Results. PLease make sure the email address you entered was a valid email.";
-	}
-	
-}
-
- function events_mail($from = 'default_from', $to, $subject, $message) {
-            $my_module = 'events';
-            $my_mail_token = microtime();
-            if ($from == 'default_from') {
-                // Change this to your own default 'from' email address.
-                $from = variable_get('system_mail', 'gwlib-webdev@groups.gwu.edu');
-            }
-            $message = array(
-                'id' => $my_module . '_' . $my_mail_token,
-                'to' => $to,
-                'subject' => $subject,
-                'body' => array($message),
-                'headers' => array(
-                    'From' => $from,
-                    'Sender' => $from,
-                    'Return-Path' => $from,
-                ),
-            );
-            $system = drupal_mail_system($my_module, $my_mail_token);
-            $message = $system->format($message);
-            if ($system->mail($message)) {
-                return TRUE;
-            } else {
-                return FALSE;
-            }
-        }
+<div class="row">
+	<div class="col-lg-12">
+		<img alt="<?php echo $event['title'];?>" src="https://www.collectiveradio.com/sites/default/files/<?php echo $event['field_image'][und][0]['filename'];?>" /> 
+		<div class="info">
+		<h2 class="title"><a href="<?php echo $url; ?>"><?php echo $event['title'];?></a></h2>
+		<p><?php echo $thedate ;?></p>
+		<p class="desc"><?php echo $event['body'][und][0]['summary'];?></p>
+		<?php if ($ticketID<>""){ ?>
+		<?php print '<a href="/cart/add/p'.$ticketID.'_q1?destination=cart">Add to Cart</a>'; ?><BR>
+		<?php echo '$'.$price; ?>
+		<?php } ?>
+		</div>
+	</div>
+</div>
+	<?php if (is_admin()){ echo $editURL; } ?>
+	 
+		<?php get_social_share_buttons($nid); ?>
+<?php }

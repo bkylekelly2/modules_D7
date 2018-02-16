@@ -1,0 +1,49 @@
+<?php
+
+function get_node($nid){
+	
+return objectToArray(node_load($nid));
+	
+}
+function get_product($nid){
+	
+return objectToArray(commerce_product_load($nid));
+	
+}
+function objectToArray( $data ) {
+	$d = "";
+
+    if ( is_object( $data ) ) 
+
+        $d = get_object_vars( $data );
+
+		return $d;
+
+}
+
+function cr_misc_mail($to, $subject, $message) {
+	$my_module = 'cr_misc';
+	$my_mail_token = microtime();
+	$from = variable_get('system_mail', 'info@collectiveradio.com');
+	$message = array(
+		'id' => $my_module . '_' . $my_mail_token,
+		'to' => $to,
+		'subject' => $subject,
+		'body' => array($message),
+		'headers' => array(
+		'MIME-Version' => '1.0',
+		'Content-Type' => 'text/html; charset=iso-8859-1; format=flowed',
+		'Content-Transfer-Encoding' => '8Bit',
+		'From' => $from,
+		'Sender' => $from,
+		'Return-Path' => $from,
+		),
+	);
+	$system = drupal_mail_system($my_module, $my_mail_token);
+	$message = $system->format($message);
+	if ($system->mail($message)) {
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+}
