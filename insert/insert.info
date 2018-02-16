@@ -7,4 +7,3 @@ version = "7.x-1.4"
 core = "7.x"
 project = "insert"
 datestamp = "1505657351"
-

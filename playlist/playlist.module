@@ -1,0 +1,155 @@
+<?php
+
+function playlist_cron(){
+//ingest_playlist_live();
+}
+    /**
+    * Implements hook_menu().
+    */
+    function playlist_menu() {
+      $items['playlist/playlist'] = array(
+        'title' => 'Playlist',
+        'page callback' => 'playlist_playlist_callback',
+        'access arguments' => array('access content'),
+      );
+      $items['playlist/nowplaying'] = array(
+        'title' => 'NowPlaying',
+        'page callback' => 'playlist_nowplaying_callback',
+        'access arguments' => array('access content'),
+      );
+      $items['playlist/ingest_playlist'] = array(
+        'title' => 'Ingest Playlist',
+        'page callback' => 'playlist_ingest_playlist_callback',
+        'access arguments' => array('access content'),
+      );
+     
+      return $items;
+    }
+
+    /**
+    * Custom callback functions.
+    */
+    function playlist_playlist_callback() {
+      get_playlist();
+    }
+    function playlist_nowplaying_callback() {
+      get_nowplaying();
+    }
+	
+    function playlist_ingest_playlist_callback() {
+      ingest_playlist_live();
+    }
+	
+	
+function get_playlist(){
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'playlist_log_item')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->propertyOrderBy('created', 'DESC')
+  ->range(0, 25)
+  ->addMetaData('account', user_load(1)); // Run the query as user 1.
+$result = $query->execute();
+if (isset($result['node'])) {
+  $log_items_nids = array_keys($result['node']);
+}
+foreach($log_items_nids as $_nid){
+$playlist = node_load($_nid);
+$playlist = objectToArray($playlist);
+$startTime = $playlist['field_start_time'][und][0]['value'];
+$endTime = $playlist['field_end_time'][und][0]['value'];
+$output .= '<div style="width:100%;font-size:18px;font-color:#cccccc; margin-top:10px;"><span class="glyphicon glyphicon-music" aria-hidden="true"></span>'.date("Y-m-d H:i",$startTime)." ".$playlist['title'].'</div>';
+}
+?>
+<div class="container-fluid" style="width:50%;">
+<div class="row">
+<div class="col-xs-12 col-md-12 ">
+<h1>Playlist (last 25 played)</h1>
+<?php echo $output; ?>
+</div>
+</div>
+</div>
+<?php }
+
+
+	
+function get_nowplaying(){
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'playlist_log_item')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->propertyOrderBy('created', 'DESC')
+  ->range(0, 1)
+  ->addMetaData('account', user_load(1)); // Run the query as user 1.
+$result = $query->execute();
+if (isset($result['node'])) {
+  $nid = array_keys($result['node']);
+}
+$np = node_load($nid[0]);
+$np = objectToArray($np);
+$output = ''.$np['title'].'';
+
+echo '
+'.$output.'
+';
+}
+
+
+function ingest_playlist_live(){
+global $user; $username = $user->name; $userpath = 'user/' . $user->uid; $userid = $user->uid;  
+$userTimezone = $user->timezone; date_default_timezone_set($userTimezone);
+$live = file_get_contents('https://airtime.collectiveradio.com/api/live-info/?callback');
+$current_song_full = get_string_between($live, '"current":{"name":', '"type":"track"},');
+$current_song_array = explode(",",$current_song_full);
+$current_song = get_string_between($current_song_array[0], '"', '"');
+$current_song_start_time = get_string_between($current_song_array[1], '"starts":"', '"');
+$current_song_start_time_array = explode(".",$current_song_start_time);
+$current_song_start_time = $current_song_start_time_array[0];
+$current_song_end_time = get_string_between($current_song_array[2], '"ends":"', '"');
+$current_song_end_time_array = explode(".",$current_song_end_time);
+$current_song_end_time = $current_song_end_time_array[0];
+$current_song_start_time_ts = strtotime($current_song_start_time_array[0]);
+$current_song_end_time_ts = strtotime($current_song_end_time_array[0]);
+$current_song_start_time_ts = (($current_song_start_time_ts)-(3600*6)); 
+$current_song_end_time_ts = (($current_song_end_time_ts)-(3600*6)); 
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'playlist_log_item')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->propertyOrderBy('created', 'DESC')
+  ->range(0, 1)
+  ->addMetaData('account', user_load(1)); // Run the query as user 1.
+$result = $query->execute();
+$nodetocheck = array_keys($result['node']);
+$nodetocheck = $nodetocheck[0];
+$last_song = (objectToArray(node_load($nodetocheck)));
+$last_song = $last_song['title'];
+
+if ($current_song<>$last_song){
+$playlistItem = new stdClass();
+$playlistItem->title = $current_song;
+$playlistItem->type = "playlist_log_item";
+node_object_prepare($playlistItem); // Sets some defaults. Invokes hook_prepare() and hook_node_prepare().
+$playlistItem->language = LANGUAGE_NONE; // Or e.g. 'en' if locale is enabled
+$playlistItem->body[$playlistItem->language][0]['value'] = "";
+$playlistItem->body[$playlistItem->language][0]['summary'] = "";
+$playlistItem->body[$playlistItem->language][0]['format'] = 'full_html';
+$playlistItem->uid = 1; 
+$playlistItem->status = 1; //(1 or 0): published or not
+$playlistItem->promote = 0; //(1 or 0): promoted to front page
+$playlistItem->comment = 1; // 0 = comments disabled, 1 = read only, 2 = read/write
+$playlistItem->field_start_time[$playlistItem->language][0]['value'] = $current_song_start_time_ts;
+$playlistItem->field_end_time[$playlistItem->language][0]['value'] = $current_song_end_time_ts;
+$playlistItem = node_submit($playlistItem); // Prepare node for saving
+node_save($playlistItem); //$datetime = date("Y-m-d H:i:s");
+unset($playlistItem);
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+//echo "was recorded";
+/////////////////////////////////////////////////////////////////////////////////////
+} else {
+//echo "was not recorded";
+}
+/////////////////////////////////////////////////////////////////////////////////////
+
+}

@@ -1,0 +1,98 @@
+<?php
+
+function get_userID(){
+	global $user;
+	return $user->uid;
+}
+
+function get_userFirstName(){
+	global $user;
+	$user_full = user_load($user->uid); // user_load(uid) returns the complete array
+	$user_full = (objectToArray($user_full));
+	return $user_full['field_first_name']['und'][0]['value'];
+}
+
+function get_userLastName(){
+	global $user;
+	$user_full = user_load($user->uid); // user_load(uid) returns the complete array
+	$user_full = (objectToArray($user_full));
+	return $user_full['field_last_name']['und'][0]['value'];
+}
+
+function get_userName(){
+	global $user;
+	return $user->name;
+}
+
+function get_userEmail(){
+	global $user;
+	return $user->email;
+}
+
+function get_userPicture(){
+	global $user;
+	$fid = $user->picture;
+	$file = file_load($fid);
+	$uri = $file->uri;
+	$url = file_create_url($uri);
+	return $url;
+}
+
+function get_userAddress(){
+	global $user;
+	$user_full = user_load($user->uid); // user_load(uid) returns the complete array
+	$user_full = (objectToArray($user_full));
+	return $user_full['field_address']['und'][0]['value'];
+}
+
+function get_userAddress2(){
+	global $user;
+	$user_full = user_load($user->uid); // user_load(uid) returns the complete array
+	$user_full = (objectToArray($user_full));
+	return $user_full['field_address2']['und'][0]['value'];
+}
+
+function get_userCity(){
+	global $user;
+	$user_full = user_load($user->uid); // user_load(uid) returns the complete array
+	$user_full = (objectToArray($user_full));
+	return $user_full['field_city']['und'][0]['value'];
+}
+
+function get_userState(){
+	global $user;
+	$user_full = user_load($user->uid); // user_load(uid) returns the complete array
+	$user_full = (objectToArray($user_full));
+	return $user_full['field_state']['und'][0]['value'];
+}
+
+function get_userZip(){
+	global $user;
+	$user_full = user_load($user->uid); // user_load(uid) returns the complete array
+	$user_full = (objectToArray($user_full));
+	return $user_full['field_zip_code']['und'][0]['value'];
+}
+
+function get_userRoles(){
+	global $user;
+	return $user->roles;
+}
+
+function get_userTZ(){
+	global $user;
+	return $user->timezone;
+}
+
+function get_userMail(){
+	global $user;
+	return $user->mail;
+}
+
+function is_admin(){
+	global $user;
+if (is_array($user->roles) && in_array('administrator', $user->roles)) {
+	return true; 
+	} else {
+	return false;
+	}
+}

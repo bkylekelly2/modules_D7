@@ -1,178 +1,157 @@
-<?php
-//remove trailing slash from uri
-if( ($_SERVER['REQUEST_URI'] != "/") and preg_match('{/$}',$_SERVER['REQUEST_URI']) ) {
-    header ('Location: '.preg_replace('{/$}', '', $_SERVER['REQUEST_URI']));
-    exit();
+<style>
+body{
+background-color:#ffffff;
+height:100%;
 }
-      $field_format[] = "field_event_format";
-      $field_open_to[] = "field_event_type";
-      $field_category[] = "field_event_category";
-      $field_series[] = "field_event_series";
-      $field_sponsor[] = "field_event_unit";
-
-	if ($_GET['events_date_start']==""){
-	  $events_date_start = "";
-	  }
-	if ($_GET['events_date_end']==""){
-	  $events_date_end = "";
-	  }
-	  if ($_GET['terms']<>""){
-	  $terms = $_GET['terms'];
-	  }
-	  if ($_GET['terms']==""){
-	  $terms = "";
-	  }
-	  if ($_GET['format']<>""){
-	  $format = $_GET['format'];
-	  }
-	  if ($_GET['format']==""){
-	  $format = "";
-	  }
-	  if ($_GET['open_to']<>""){
-	  $open_to = $_GET['open_to'];
-	  }
-	  if ($_GET['open_to']==""){
-	  $open_to = "";
-	  }
-	  if ($_GET['series']<>""){
-	  $series = $_GET['series'];
-	  }
-	  if ($_GET['series']==""){
-	  $series = "";
-	  }
-	  if ($_GET['category']<>""){
-	  $category = $_GET['category'];
-	  }
-	  if ($_GET['category']==""){
-	  $category = "";
-	  }
-	  if ($_GET['sponsor']<>""){
-	  $sponsor = $_GET['sponsor'];
-	  }
-	  if ($_GET['sponsor']==""){
-	  $sponsor = "";
-	  }
-	  if ($_GET['page']<>""){
-	  $page = $_GET['page'];
-	  }
-	  if ($_GET['page']==""){
-	  $page = "1";
-	  }
-
-	  if ($_GET['order']<>""){
-	  $order = $_GET['order'];
-	  }
-	  if ($_GET['order']==""){
-	  $order = "DATE_ASC";
-	  }
-
-$do_ajax=TRUE;
-if ( ($date=="")&&($terms=="")&&($format=="")&&($open_to=="")&&($series=="")&&($category=="")&&($sponsor=="")&&($page=="") ){
-$do_ajax=FALSE; search_results();
+#upcoming_events_filter{
+background-color:#e5e5e5;
+margin-left:10px;
+color:#000000;
+text-align:center;
 }
+#upcoming_events{
+background-color:#e5e5e5;
+margin-left:10px;
+color:#000000;
+text-align:left;
+}
+#upcoming_events img {
+  padding: .5em;
+  float: left;
+}
+#upcoming_events_misc{
+background-color:#e5e5e5;
+margin-left:10px;
+color:#000000;
+text-align:center;
+margin-right:10px;
+}
+</style>
 
-
-
-drupal_add_library('system', 'ui.datepicker');
-drupal_add_js("(function ($) { $('.datepicker').datepicker(); })(jQuery);", array('type' => 'inline', 'scope' => 'footer', 'weight' => 5));
-?>
-
-<div class="sidebar-content" id="events-sidebar">
-<div class="region region-sidebar">
-<div class="section">
-<div class="block block-views contextual-links-region">
-<div class="inner clearfix gutter">
-<div class="inner-wrapper">
-<div class="inner-inner">
-<div id="show_hide_filters">
-  <div id="show_filters">show event filters</div>
-  <div id="hide_filters">hide event filters</div>
-</div>
-<div id="filter_divisions">
-  <div class="filter-division"><?php block_format("Format","events",$field_format); ?></div>
-  <div class="filter-division"><?php block_format("Sponsor","events",$field_sponsor); ?></div>
-  <div class="filter-division"><?php block_format("Open To","events",$field_open_to); ?></div>
-  <div class="filter-division"><?php block_format("Category","events",$field_category); ?></div>
-  <div class="filter-division"><?php block_format("Series","events",$field_series); ?></div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-<div class="primary-content-063">
-<section class="all-purpose-detail pane contextual-links-region">
-
-<h1 class="page-title">Events at GW Libraries</h1>
-
-<p id="events_current_past">
-<!--
-<span id="search_count"></span> upcoming events at GW Libraries. Looking for an older event? Check out our <a href="/news-events/past-events">archives of past events</a>.
--->
-<span id="search_count"></span> events at GW Libraries.
-</p>
-
-<div id="events_search_and_sort">
-<form name="eventsForm" id="eventsForm" >
-  <div id="order_sort">
-    <label for="order">Sort by:</label>
-    <select name="order" id="order" onchange="do_ajax();" >
-      <option value="DATE_ASC" <?php if ($order=="DATE_ASC") {echo $select;} ?> >Date (first to last)</option>
-      <option value="DATE_DESC" <?php if ($order=="DATE_DESC") {echo $select;} ?> >Date (last to first)</option>
-      <option value="TITLE_ASC" <?php if ($order=="TITLE_ASC") {echo $select;} ?> >Title (A-Z)</option>
-      <option value="TITLE_DESC" <?php if ($order=="TITLE_ASC") {echo $select;} ?> >Title (Z-A)</option>
-    </select>
-  </div>
-  <input type="text" id="terms" name="terms" value="<?php echo $terms; ?>" placeholder="Search by keyword" value="">
-  <input type="hidden" value="<?php echo $format; ?>" name="format" id="format">
-  <input type="hidden" value="<?php echo $open_to; ?>" name="open_to" id="open_to">
-  <input type="hidden" value="<?php echo $sponsor; ?>" name="sponsor" id="sponsor">
-  <input type="hidden" value="<?php echo $category; ?>" name="category" id="category">
-  <input type="hidden" value="<?php echo $series; ?>" name="series" id="series">
-  <input type="hidden" value="<?php echo $format; ?>" name="room" id="room">
-  <input type="hidden" value="<?php echo $page; ?>" name="page" id="page">
-  <input type="text" class="datepicker" name="events_date_start" id="events_date_start" value="<?php echo $events_date_start; ?>" placeholder="Start Date" readonly size="10">
-  <input type="text" class="datepicker" name="events_date_end" id="events_date_end" value="<?php echo $events_date_end; ?>" placeholder="End Date" readonly size="10">
-  <input type="button" id="submitForm" value="Search">
-  <input type="button" id="clearDate" value="Clear Date">
-
-</form>
-</div>
-<div id="filters" class="filters">
-<div id="filter_remove" style="display:none"></div>
-<div id="filter_terms" style="display:none"></div> 
-<div id="filter_date_range" style="display:none"></div> 
-<div id="filter_format" style="display:none"></div> 
-<div id="filter_sponsor" style="display:none"></div> 
-<div id="filter_open_to" style="display:none"></div> 
-<div id="filter_category" style="display:none"></div> 
-<div id="filter_series" style="display:none"></div>
-</div>
-<!--<div id="search_sql"></div>-->
-<div id="search_results"></div>
-<div id="pagination">
-</div>
-</section>
-<section id="section_send_email">
-<div id="div_send_email">
-<div id="label_share_results">Share Results</div>
-<form id="form2" name="form2" onclick="return false;" style="display:none;">
-<div>
-<input type="text" id="email" name="email" placeholder="Email">
-</div>
-<div id="url_to_copy">
-<input id="url" name="url" readonly > <i class="fa fa-copy fa-lg" id="copy" title="Copy to clipboard"></i>
-</div>
-<button id="send_results">Send Results</button>
-</form>
-</section>
-</div>
-
-<?php if ($do_ajax){?>
 <script>
-do_ajax();
-</script>	
-<?php } ?>
+jQuery( document ).ready(function() {
+  // Handler for .ready() called.
+"use strict";	
+
+	
+  // Get some values from elements on the page:
+  var url = "/search_events";
+ 
+  // Send the data using post
+  var posting = jQuery.get(url);
+ 
+  // Put the results in a div
+  posting.done(function( data ) {
+    jQuery( "#display_events" ).html( data );
+  });
+	
+jQuery( ".dateterm" ).click(function( event ) {
+ 
+  // Stop form from submitting normally
+  event.preventDefault();
+ 
+  // Get some values from elements on the page:
+  var url = "/search_events";
+  var dateterm = jQuery(this).data("id");
+ 
+  // Send the data using post
+  var posting = jQuery.post( url, { dateterm: dateterm } );
+ 
+  // Put the results in a div
+  posting.done(function( data ) {
+    jQuery( "#display_events" ).html( data );
+  });
+});
+	
+jQuery( "#search_events_Form" ).submit(function( event ) {
+ 
+  // Stop form from submitting normally
+  event.preventDefault();
+ 
+  // Get some values from elements on the page:
+  var $form = jQuery( this ),
+    search = $form.find( "input[name='title']" ).val(),
+    date_start = $form.find( "input[name='date_start']" ).val(),
+    date_end = $form.find( "input[name='date_end']" ).val(),
+    url = $form.attr( "action" );
+ 
+  // Send the data using post
+  var posting = jQuery.post( url, { title: search, date_start: date_start, date_end: date_end } );
+ 
+  // Put the results in a div
+  posting.done(function( data ) {
+    jQuery( "#display_events" ).html( data );
+  });
+});	
+	
+    jQuery( ".datepicker" ).datepicker();
+	
+jQuery("#date_end, #date_start").on("change", function() {
+
+	var startVal = jQuery("#date_start").val();
+	var endVal = jQuery("#date_end").val();
+	var startArray = startVal.split("/");
+	var startYear = startArray.pop();
+	startArray.unshift(startYear);
+	var startVal2 = startArray.join("");
+	var endArray = endVal.split("/");
+	var endYear = endArray.pop();
+	endArray.unshift(endYear);
+	var endVal2 = endArray.join("");
+
+	if (startVal !== "" && endVal !== "") {
+		if (startVal2 > endVal2) {
+			jQuery(this).val("");
+			alert("End date must be later than (or same as) the start date");			
+		} 
+	} else {
+		if (startVal === "") {
+			jQuery("#hours_date_start").val(endVal);
+
+		} else {
+			jQuery("#hours_date_end").val(startVal);
+		}
+	}
+  
+
+});	
+	
+
+	
+});
+</script>
+ <div class="row" style="height:100%;height:100vh;">
+ 
+ <div class="col-sm-3">
+ <div id="upcoming_events_filter">
+ <h3>Upcoming Events</h3>
+ <div class="dateterm" data-id="all" data-toggle="tooltip" data-placement="left" title="Get All Events">All</div>
+ <div class="dateterm" data-id="today" data-toggle="tooltip" data-placement="left" title="Get All Today's Events">Today</div>
+ <div class="dateterm" data-id="tomorrow" data-toggle="tooltip" data-placement="left" title="Get All Tomorrow's Events">Tomorrow</div>
+ <div class="dateterm" data-id="week" data-toggle="tooltip" data-placement="left" title="Get All Events For This Week">This Week</div>
+ <div class="dateterm" data-id="weekend" data-toggle="tooltip" data-placement="left" title="Get All Events This Weekend">This Weekend</a></div>
+ <div class="dateterm" data-id="month" data-toggle="tooltip" data-placement="left" title="Get All Events This Month">This Month</a></div>
+ </div>
+ </div>
+ 
+ <div class="col-sm-6">
+ <div id="upcoming_events"><h3></h3>
+ <div id="display_events"></div>
+ </div>
+ </div>
+  
+ <div class="col-sm-3">
+ <form action="/search_events" id="search_events_Form">
+<div id="upcoming_events_misc"><h3>Search</h3>
+	  <input type="text" name="title" placeholder="Search..."  data-toggle="tooltip" data-placement="left" title="Enter Your Search Keyword Here">
+	  <input type="hidden" name="dateterm" value="<?php echo $dateterm; ?>">
+</div>
+ <div id="upcoming_events_misc"><h3>Date Range</h3>
+	  <input type="text" class="datepicker" id="date_start" name="date_start"  placeholder="Date Start" size="10" data-toggle="tooltip" data-placement="left" title="Select a starting date here. You can select only one date."/>
+	  <input type="text" class="datepicker" id="date_end" name="date_end"  placeholder="Date End" size="10" data-toggle="tooltip" data-placement="left" title="If you select a start date, select your end date here."/>
+</div>
+<div id="div_search_button" style="margin-left:.5em;margin-top:1em;margin-right:.5em;"><input type="submit" value="Search" style="width:100%;"></div>
+	</form>
+ </div>
+  
+ </div>

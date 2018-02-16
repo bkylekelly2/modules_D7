@@ -1,12 +1,18 @@
+This text will be used by screen readers, search engines, or when the image cannot be loaded. REQUIRED!
 
-Insert is a utility that makes inserting images and links to files into text
-areas or WYSIWYGs much easier. It adds a simple JavaScript-based button to
-File and Image fields. Images may be inserted into text areas with a specific
-Image style.
+Insert is a utility that inserts allowed images into the form body field.
+* This module makes alternate text required for all images. 
+* If no alternate text then user will be prompted to enter alternate text when the insert button is pressed.
+* If no alternate text is entered if user cuts and pastes an image into the body field then user will 
+be prompted with an error message.
+* Form can not be saved unless alternate text is entered.
+* Leading and trailing spaces are trimmed when using insert image into body function.
+* At this time if user cuts and pastes an image and alternate text has leading or trailing spaces those spaces will remain.
 
 Insert was written by Nate Haug.
 
 This Module Made by Robots: http://www.lullabot.com
+AND enhanced by Kyle Kelly and Max Headroom.
 
 Dependencies
 ------------

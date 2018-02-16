@@ -1,0 +1,96 @@
+<?php 
+
+function player_cron(){
+//ingest_player_live();
+}
+
+
+function player_menu(){
+	$items = array();
+	//Display Table
+
+	$items['player'] = array(
+
+		'title' => "Player",
+
+		'page callback' => 'player_function',
+
+    	'access arguments' => array("access content"),
+
+    	'type' => MENU_NORMAL_ITEM,
+
+	);
+
+return $items;
+}
+
+/*
+ * Returns custom content to Drupal
+ */
+function player_function(){
+  // Call theme() function, so that Drupal includes the 
+	//player-page.tpl.php template
+  return theme('player_template');
+}
+/*
+ * Implementation of hook_theme().
+ */
+function player_theme(){
+  return array(
+    'player_template' => array(
+      // template file name will be player-page.tpl.php
+      'template' => 'player-page',
+    ),
+  );
+}
+
+function get_video_player_hls(){ ?>
+
+<video id="video-player" controls poster="https://www.collectiveradio.com/images/background4.png">
+  <source src="http://zeus.collectiveradio.com/ts/playlist.m3u8" type="application/x-mpegURL">
+  <!--<source src="mov_bbb.mp4" type="video/mp4">-->
+  Your browser does not support HTML5 video.
+</video>
+	
+ <?php }
+
+function get_video_player_webm(){ ?>
+
+<video id="video-player" controls poster="https://www.collectiveradio.com/images/background4.png">
+  <source src="http://zeus.collectiveradio.com/ts/playlist.m3u8" type="application/x-mpegURL">
+  <!--<source src="mov_bbb.mp4" type="video/mp4">-->
+  Your browser does not support HTML5 video.
+</video>
+	
+ <?php }
+
+function get_audio_player($src){?>
+<video class="video-js vjs-default-skin  vjs-big-play-centered" controls poster="https://www.collectiveradio.com/images/collective-radio5.png" preload="auto" data-setup='{"fluid": true}' id="audio-player">
+<source src="<?php echo $src; ?>" type="video/mp4"/>
+</video>
+<?php }
+
+function get_audio_player_mobile($src){ ?>
+<video  width="288" height="216" preload="auto" id="audio-player" style="display:none;">
+<source src="<?php echo $src; ?>" type="video/mp4"/>
+</video>
+<?php 	
+ }
+
+
+
+function get_audio_player_hidden($src){ ?>
+<video  width="288" height="216" preload="auto" id="audio-player" style="display:none;">
+<source src="<?php echo $src; ?>" type="video/mp4"/>
+</video>
+<?php 	
+ }
+
+function get_audio_player_small($src){ ?>
+<audio class="" width="288" height="35" controls id="audio-player">
+<source src="<?php echo $src; ?>" type="audio/mpeg"/>
+</audio>
+<?php 	
+ }
+
+

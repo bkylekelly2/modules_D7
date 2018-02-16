@@ -1,5 +1,5 @@
-name = Events
-description = This module provides the events.
+name = CR User
+description = This module provides the user functions for CollectiveRadio.
 core = 7.x
 package = CollectiveRadio
 dependencies[] = collectiveradio
@@ -8,4 +8,4 @@ dependencies[] = collectiveradio
 version = "7.x-2.x-dev"
 core = "7.x"
 project = "collectiveradio"
-datestamp = "1380637887"
+datestamp = "7.16.2017 10:47AM"

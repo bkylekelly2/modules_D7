@@ -369,16 +369,16 @@ echo '
 </html>';	
 }
 
-function events_get_events(){
+function events_get_events_count(){
 	
-$time = time();
+$date = date("Y-m-d")." 00:00:00";
 
 
 $query = new EntityFieldQuery();
 $query->entityCondition('entity_type', 'node')
   ->entityCondition('bundle', 'event')
   ->propertyCondition('status', NODE_PUBLISHED)
-  ->fieldCondition('field_date', 'value', $time, '>=')
+  ->fieldCondition('field_date', 'value', $date, '>=')
   ->fieldOrderBy('field_date', 'value', 'ASC')
   //->range(0, 8)
   // Run the query as user 1.
@@ -386,10 +386,33 @@ $query->entityCondition('entity_type', 'node')
 
 $result = $query->execute();
 if (isset($result['node'])) {
-  $events = array_keys($result['node']);
+  $nids = array_keys($result['node']);
 }
+
+	return count($nids);
+
+}
+
+function events_get_front_page_events_items($page){
 	
-print_r($events);
+$date = date("Y-m-d")." 00:00:00";
+
+$query = new EntityFieldQuery();
+$query->entityCondition('entity_type', 'node')
+  ->entityCondition('bundle', 'event')
+  ->propertyCondition('status', NODE_PUBLISHED)
+  ->fieldCondition('field_date', 'value', $date, '>=')
+  ->fieldOrderBy('field_date', 'value', 'ASC')
+  ->range(0, 9)
+  // Run the query as user 1.
+  ->addMetaData('account', user_load(1));
+
+$result = $query->execute();
+if (isset($result['node'])) {
+  $nids = array_keys($result['node']);
+}
+
+return $nids;
 
 }
 
@@ -432,31 +455,33 @@ function get_list_of_formatted_events2($events){ /*?>
 function events_get_event($nid){
 
 $event = objectToArray(node_load($nid));
-$src = "https://www.collectiveradio.com/sites/default/files/".$event['field_cover'][und][0]['filename'];
-$description = $event['body'][und][0]['safe_value'];
-$date = date("M j, Y g:i a",$event['field_date'][und][0]['value']);
-$title = $event['title'];
-$ticketID = $event['field_ticket'][und][0]['target_id'];
-$venueID = $event['field_venue_reference'][und][0]['target_id'];
-$venue = objectToArray(node_load($venueID));
-$venue = $venue['title'];
-$venue_url = drupal_get_path_alias('node/'.$venueID.'');
-//$artist = $event['field_artist_reference'][und][0]['target_id'];
-//$artist = objectToArray(node_load($artist));
-//$artist = $artist['title'];
-	
+$url = drupal_get_path_alias('node/'.$nid.'');
+$timezone = date("e", $event['field_date'][und][0]['value']);
+switch($timezone){
 
-$event = objectToArray(node_load($nid));
-	        $url = drupal_get_path_alias('node/'.$nid.'');
+	case "America/New_York":
+        $tz = "EST";
+    break;
+	case "America/Chicago":
+        $tz = "CST";
+    break;
+	case "America/Los_Angeles":
+        $tz = "PST";
+    break;
+		
+}	
+$thedate = date("Y-m-d g:ia", $event['field_date'][und][0]['value'])." ".$tz;
 ?>
 
+<div class="well" style="height:500px;">
+<a href="<?php echo $url; ?>"><img alt="<?php echo $event['title'];?>"  src="https://www.collectiveradio.com/sites/default/files/<?php echo $event['field_image'][und][0]['filename'];?>" alt="<?php echo $event['title'];?>" title="<?php echo $event['title'];?>" /></a>
+<div class="info">
+<p class="title"><a href="<?php echo $url; ?>"><?php echo $event['title'];?></a></p>
+<p class="date"><?php echo $thedate; ?></p>
+</div>
+<?php get_social_share_buttons($nid); ?>
 
-
-						<img alt="<?php echo $event['title'];?>"  src="https://www.collectiveradio.com/sites/default/files/<?php echo $event['field_image'][und][0]['filename'];?>" /> 
-						<div class="info">
-							<h2 class="title"><a href="<?php echo $url; ?>"><?php echo $event['title'];?></a></h2>
-						</div>
-
+</div>
 <?php }
 
 function delete_events(){
@@ -488,3 +513,33 @@ $seconds_now = time();
 $remaining_seconds = ($top_of_the_hour-$seconds_now);
 echo $remaining_seconds;
 }
+
+function events_get_front_page_events(){
+	$fp_nids=events_get_front_page_events_items();
+
+
+for ($page = 1; $page <= 3; $page++) { 
+	
+	$limit = 3;	
+	$nids = array_keys(array_flip($fp_nids));	
+	$offset = (($page*$limit)-$limit);
+	$paged_nids = array_values(array_slice($fp_nids, $offset, $limit, preserve_keys ));
+?>
+<div class="therow" width="100%">
+<?php for ($x = 0; $x <= 2; $x++) { ?>
+<div class="column">
+	<?php events_get_event($paged_nids[$x]); ?>
+</div>
+<?php } ?>
+</div>
+
+<?php }
+}
+
+function get_front_page_hero(){ ?>
+<div id="hero">
+	<div id="myCarousel" class="carousel slide" data-ride="carousel">
+	<?php get_fp_events_carousel_items(); ?>
+	</div>
+</div>
+<?php }
