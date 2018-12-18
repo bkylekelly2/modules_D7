@@ -5,13 +5,13 @@
  */
 function globalchange_indicators_custom_menu()
 {
-    $items['browse/indicators'] = array(
-        'title' => 'USGCRP Indicators',
+    $items['browse/indicators/catalog'] = array(
+        'title' => 'USGCRP Indicators Catalog',
         'page callback' => 'globalchange_indicators_custom_catalog_function',
         'access arguments' => array('access content'),
     );
 
-    $items['explore/indicators'] = array(
+    $items['browse/indicators'] = array(
         'title' => 'USGCRP Indicators',
         'page callback' => 'globalchange_indicators_custom_main_function',
         'access arguments' => array('access content'),
