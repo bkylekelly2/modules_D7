@@ -1,0 +1,68 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function nhmrc_video_player_menu(){
+  $items['dating_irl'] = array(
+    'title' => 'Dating IRL',
+    'page callback' => 'nhmrc_video_player_function',
+    'access arguments' => array('access content'),
+  );
+
+
+  $items['video_player/get_body'] = array(
+    'title' => 'Dating IRL Body',
+    'page callback' => 'nhmrc_video_player_body_function',
+    'access arguments' => array('access content'),
+  );
+
+    return $items;
+}
+
+/*
+ * Returns custom content to Drupal
+ */
+
+function nhmrc_video_player_function(){
+
+    return theme('nhmrc_video_player_template');
+
+}
+
+
+function nhmrc_video_player_theme(){
+    return array(
+        'nhmrc_video_player_template' => array(
+            // template file name will be nhmrc-video-player-page.tpl.php
+            'template' => 'nhmrc-video-player-page',
+        )
+    );
+
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+function nhmrc_video_player_body_function(){
+
+  $nid = $_POST['query'];
+  $node = node_load($nid);
+  $node = objectToArray($node);
+
+
+  $body = $node['body']['und'][0]['safe_value'];
+
+  echo $body;
+}
+
+
+function objectToArray( $data ) {
+    $d = "";
+
+    if ( is_object( $data ) )
+
+        $d = get_object_vars( $data );
+
+    return $d;
+
+}

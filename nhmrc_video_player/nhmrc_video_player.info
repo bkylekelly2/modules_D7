@@ -1,0 +1,7 @@
+name = NHMRC Video Player
+description = This module provides /video_player for you tube videos and playlist
+core = 7.x
+package = VideoPlayer
+version = "7.x-2.x-dev"
+project = "videoplayer"
+datestamp = "22:37:00 23/Jan/2019"
